@@ -1,6 +1,14 @@
+using System.Text.Json.Serialization.Metadata;
+using VeteranGallery.API.Data;
+using VeteranGallery.Domain.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
+    });
 
 builder.Services.AddOpenApi();
 
@@ -15,7 +23,11 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddSingleton<IVeteranRepository, JsonVeteranRepository>();
+
 var app = builder.Build();
+
+app.UseRouting();
 
 app.UseCors("AllowReactApp");
 
