@@ -1,0 +1,25 @@
+[
+  {
+    "$type": "infantry",
+    "Specialization": "Sniper",
+    "Id": "5a567cda-9d65-4feb-bae2-633c999ec117",
+    "FullName": "Ivan Mazepa",
+    "Rank": "Sergeant",
+    "UnitName": "93rd Brigade",
+    "Story": "",
+    "Branch": 0,
+    "PhotoUrl": null
+  },
+  {
+    "$type": "pilot",
+    "VehicleModel": "Su-24",
+    "ExperienceValue": 150,
+    "Id": "83cbd0f0-ee3f-40ff-a187-c431a61da8ca",
+    "FullName": "Stepan Stepanenko",
+    "Rank": "Major",
+    "UnitName": "7th Tactical Aviation Brigade",
+    "Story": "",
+    "Branch": 1,
+    "PhotoUrl": null
+  }
+]

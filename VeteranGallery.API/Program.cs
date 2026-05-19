@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization.Metadata;
 using VeteranGallery.API.Data;
 using VeteranGallery.Domain.Interfaces;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +35,7 @@ app.UseCors("AllowReactApp");
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
