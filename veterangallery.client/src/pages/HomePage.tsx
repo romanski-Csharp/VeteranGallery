@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react';
 import Header from '../components/Header';
 import VeteranCard from '../components/VeteranCard';
-import AddVeteranForm from '../components/AddVeteranForm';
 import { getVeterans } from '../api/apiClient';
 import type { Veteran } from '../types/veteran';
 
@@ -33,18 +34,34 @@ const HomePage = () => {
         }
     };
 
-    const refreshList = async () => {
-        const data = await getVeterans();
-        setAllVeterans(data);
-        setFilteredVeterans(data);
-    };
-
     return (
         <div className="app-container">
             <Header onFilterChange={handleFilterChange} />
 
             <main className="gallery-container" style={{ padding: '2rem' }}>
-                <AddVeteranForm onSuccess={refreshList} />
+                <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Link
+                        to="/add-veteran"
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            backgroundColor: '#2563eb',
+                            color: 'white',
+                            padding: '0.75rem 1.5rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontWeight: '500',
+                            boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)',
+                            transition: 'background-color 0.2s'
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                    >
+                        <PlusCircle className="w-5 h-5" /> Add New Profile
+                    </Link>
+                </div>
+
                 {loading ? (
                     <div className="loading" style={{ textAlign: 'center', marginTop: '2rem' }}>Loading heroes...</div>
                 ) : (
