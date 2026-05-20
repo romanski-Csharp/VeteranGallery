@@ -30,4 +30,16 @@ public class JsonVeteranRepository : IVeteranRepository
         var json = JsonSerializer.Serialize(all, _options);
         await File.WriteAllTextAsync(_filePath, json);
     }
+    public async Task DeleteAsync(Guid id)
+    {
+        var all = (await GetAllAsync()).ToList();
+        var veteranToRemove = all.FirstOrDefault(v => v.Id == id);
+
+        if (veteranToRemove != null)
+        {
+            all.Remove(veteranToRemove);
+            var json = JsonSerializer.Serialize(all, _options);
+            await File.WriteAllTextAsync(_filePath, json);
+        }
+    }
 }

@@ -22,10 +22,28 @@ public class VeteransController : ControllerBase
         return Ok(veterans);
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Veteran>> GetById(Guid id)
+    {
+        var veteran = await _repository.GetByIdAsync(id);
+        if (veteran == null) return NotFound();
+        return Ok(veteran);
+    }
+
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] Veteran veteran)
     {
         await _repository.AddAsync(veteran);
         return CreatedAtAction(nameof(GetAll), new { id = veteran.Id }, veteran);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(Guid id)
+    {
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null) return NotFound();
+
+        await _repository.DeleteAsync(id);
+        return NoContent();
     }
 }
