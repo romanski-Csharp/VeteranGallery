@@ -21,5 +21,16 @@
     "Story": "",
     "Branch": 1,
     "PhotoUrl": null
+  },
+  {
+    "$type": "infantry",
+    "Specialization": "test",
+    "Id": "4ebaed00-23cb-4ebd-aa0d-9608e5fff6cb",
+    "FullName": "test",
+    "Rank": "test",
+    "UnitName": "test",
+    "Story": "test\n",
+    "Branch": 0,
+    "PhotoUrl": ""
   }
 ]

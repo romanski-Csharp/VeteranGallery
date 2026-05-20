@@ -21,25 +21,30 @@ const AddVeteranForm = ({ onSuccess }: Props) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        let newVeteran: any = {
-            fullName, rank, unitName, story, branch, photoUrl
-        };
+        let newVeteran: any;
 
         if (branch === MilitaryBranch.AirForce) {
-            newVeteran = { ...newVeteran, $type: 'pilot', vehicleModel, experienceValue: experience };
-        } else if (branch === MilitaryBranch.LandForces) {
-            newVeteran = { ...newVeteran, $type: 'infantry', specialization };
+            newVeteran = {
+                $type: 'pilot',
+                fullName, rank, unitName, story, branch, photoUrl,
+                vehicleModel,
+                experienceValue: experience
+            };
         } else {
-            newVeteran = { ...newVeteran, $type: 'infantry', specialization: 'Загальна' };
+            newVeteran = {
+                $type: 'infantry',
+                fullName, rank, unitName, story, branch, photoUrl,
+                specialization
+            };
         }
 
         try {
             await apiClient.post('/veterans', newVeteran);
-            onSuccess(); 
-            alert('Героя успішно додано!');
+            onSuccess();
+            alert('Hero profile successfully added!');
         } catch (error) {
-            console.error('Помилка при додаванні', error);
-            alert('Не вдалося додати ветерана.');
+            console.error('Error adding veteran:', error);
+            alert('Failed to add hero profile.');
         }
     };
 

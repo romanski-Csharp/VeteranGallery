@@ -9,6 +9,7 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.TypeInfoResolver = new DefaultJsonTypeInfoResolver();
+        options.JsonSerializerOptions.AllowOutOfOrderMetadataProperties = true;
     });
 
 builder.Services.AddOpenApi();
