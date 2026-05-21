@@ -8,4 +8,5 @@ public interface IVeteranRepository
     Task<Veteran?> GetByIdAsync(Guid id);
     Task AddAsync(Veteran veteran);
     Task DeleteAsync(Guid id);
+    Task UpdateAsync(Veteran veteran);
 }

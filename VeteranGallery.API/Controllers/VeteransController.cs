@@ -46,4 +46,16 @@ public class VeteransController : ControllerBase
         await _repository.DeleteAsync(id);
         return NoContent();
     }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update(Guid id, [FromBody] Veteran veteran)
+    {
+        if (id != veteran.Id) return BadRequest("ID mismatch");
+
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null) return NotFound();
+
+        await _repository.UpdateAsync(veteran);
+        return NoContent();
+    }
 }

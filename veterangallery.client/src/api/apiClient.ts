@@ -20,3 +20,7 @@ export const getVeteranById = async (id: string) => {
 export const deleteVeteran = async (id: string) => {
     await apiClient.delete(`/veterans/${id}`);
 };
+
+export const updateVeteran = async (id: string, veteran: any) => {
+    await apiClient.put(`/veterans/${id}`, veteran);
+};

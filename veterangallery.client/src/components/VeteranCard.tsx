@@ -1,12 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MilitaryBranch } from '../types/veteran';
 import type { Veteran, Pilot, Infantryman, DroneOperator } from '../types/veteran';
+
 
 interface Props {
     veteran: Veteran;
 }
 
 const VeteranCard = ({ veteran }: Props) => {
+    const location = useLocation();
+
     const getBranchName = () => {
         switch (veteran.branch) {
             case MilitaryBranch.LandForces: return "Land Forces";
@@ -22,7 +25,7 @@ const VeteranCard = ({ veteran }: Props) => {
             const p = veteran as Pilot;
             return (
                 <div style={{ fontSize: '0.85rem', color: '#93c5fd', marginTop: '4px' }}>
-                    🛩️ {p.vehicleModel} • {p.experienceValue} hrs
+                    {p.vehicleModel} • {p.experienceValue} hrs
                 </div>
             );
         }
@@ -30,7 +33,7 @@ const VeteranCard = ({ veteran }: Props) => {
             const i = veteran as Infantryman;
             return (
                 <div style={{ fontSize: '0.85rem', color: '#86efac', marginTop: '4px' }}>
-                    🎯 {i.specialization}
+                    {i.specialization}
                 </div>
             );
         }
@@ -38,7 +41,7 @@ const VeteranCard = ({ veteran }: Props) => {
             const d = veteran as DroneOperator;
             return (
                 <div style={{ fontSize: '0.85rem', color: '#d8b4fe', marginTop: '4px' }}>
-                    🎮 {d.vehicleModel} • {d.experienceValue} sorties
+                    {d.vehicleModel} • {d.experienceValue} sorties
                 </div>
             );
         }
@@ -48,6 +51,7 @@ const VeteranCard = ({ veteran }: Props) => {
     return (
         <Link
             to={`/veteran/${veteran.id}`}
+            state={{ background: location }}
             style={{
                 display: 'block',
                 textDecoration: 'none',

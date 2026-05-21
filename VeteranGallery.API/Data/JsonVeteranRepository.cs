@@ -42,4 +42,16 @@ public class JsonVeteranRepository : IVeteranRepository
             await File.WriteAllTextAsync(_filePath, json);
         }
     }
+    public async Task UpdateAsync(Veteran veteran)
+    {
+        var all = (await GetAllAsync()).ToList();
+        var index = all.FindIndex(v => v.Id == veteran.Id);
+
+        if (index != -1)
+        {
+            all[index] = veteran;
+            var json = JsonSerializer.Serialize(all, _options);
+            await File.WriteAllTextAsync(_filePath, json);
+        }
+    }
 }
