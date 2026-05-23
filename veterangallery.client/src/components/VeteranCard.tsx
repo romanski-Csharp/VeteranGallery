@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { MilitaryBranch } from '../types/veteran';
+import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import type { Veteran, Pilot, Infantryman, DroneOperator } from '../types/veteran';
 
 
@@ -109,7 +109,7 @@ const VeteranCard = ({ veteran }: Props) => {
                     {veteran.fullName}
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#cbd5e1' }}>
-                    {veteran.rank} • {veteran.unitName}
+                    {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                 </p>
                 {renderSpecializedInfo()}
             </div>

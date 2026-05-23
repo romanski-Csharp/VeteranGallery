@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MilitaryBranch } from '../types/veteran';
 import { apiClient, updateVeteran } from '../api/apiClient';
+import { MilitaryBranch, MilitaryRank, getRankDisplayName } from '../types/veteran';
 
 interface Props {
     onSuccess: () => void;
@@ -12,10 +12,10 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     const isEditMode = !!veteranToEdit;
 
     const [fullName, setFullName] = useState(veteranToEdit?.fullName || '');
-    const [rank, setRank] = useState(veteranToEdit?.rank || '');
+    const [rank, setRank] = useState<MilitaryRank>(veteranToEdit?.rank ?? MilitaryRank.SoldierOrSailor);
     const [unitName, setUnitName] = useState(veteranToEdit?.unitName || '');
     const [story, setStory] = useState(veteranToEdit?.story || '');
-    const [branch, setBranch] = useState<number>(veteranToEdit?.branch ?? MilitaryBranch.LandForces);
+    const [branch, setBranch] = useState<MilitaryBranch>(veteranToEdit?.branch ?? MilitaryBranch.LandForces);
     const [photoUrl, setPhotoUrl] = useState(veteranToEdit?.photoUrl || '');
 
     const [specialization, setSpecialization] = useState(veteranToEdit?.$type === 'infantry' ? veteranToEdit.specialization : '');
@@ -117,7 +117,20 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Rank</label>
-                            <input required style={inputStyle} value={rank} onChange={e => setRank(e.target.value)} onFocus={handleFocus} onBlur={handleBlur} />
+                            <select
+                                required
+                                style={inputStyle}
+                                value={rank}
+                                onChange={e => setRank(Number(e.target.value) as MilitaryRank)}
+                                onFocus={handleFocus}
+                                onBlur={handleBlur}
+                            >
+                                {(Object.values(MilitaryRank) as MilitaryRank[]).map(value => (
+                                    <option key={value} value={value}>
+                                        {getRankDisplayName(value, branch)}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                         <div>
                             <label style={labelStyle}>Military Unit</label>
@@ -131,7 +144,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Branch</label>
-                            <select disabled={isEditMode} style={inputStyle} value={branch} onChange={e => setBranch(Number(e.target.value))} onFocus={handleFocus} onBlur={handleBlur}>
+                            <select disabled={isEditMode} style={inputStyle} value={branch} onChange={e => setBranch(Number(e.target.value) as MilitaryBranch)} onFocus={handleFocus} onBlur={handleBlur}>
                                 <option value={MilitaryBranch.LandForces}>Land Forces</option>
                                 <option value={MilitaryBranch.AirForce}>Air Force</option>
                             </select>

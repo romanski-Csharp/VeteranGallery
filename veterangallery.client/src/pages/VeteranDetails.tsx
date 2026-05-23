@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plane, Users, Anchor, Crosshair, HelpCircle, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
-import { MilitaryBranch } from '../types/veteran';
+import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import AddVeteranForm from '../components/AddVeteranForm'; 
 import type { Veteran, Pilot, Infantryman } from '../types/veteran';
 
@@ -179,7 +179,7 @@ const VeteranDetails = () => {
 
                             <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2.5rem', color: '#0f172a', lineHeight: '1.1' }}>{veteran.fullName}</h2>
                             <p style={{ margin: '0 0 2rem 0', color: '#64748b', fontSize: '1.1rem', fontWeight: '500' }}>
-                                {veteran.rank} • {veteran.unitName}
+                                {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                             </p>
 
                             <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>

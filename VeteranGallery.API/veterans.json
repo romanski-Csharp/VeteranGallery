@@ -1,36 +1,13 @@
 [
   {
     "$type": "infantry",
-    "Specialization": "Sniper",
-    "Id": "5a567cda-9d65-4feb-bae2-633c999ec117",
-    "FullName": "Ivan Mazepa",
-    "Rank": "Sergeant",
-    "UnitName": "93rd Brigade",
-    "Story": "",
-    "Branch": 0,
-    "PhotoUrl": null
-  },
-  {
-    "$type": "pilot",
-    "VehicleModel": "Su-24",
-    "ExperienceValue": 150,
-    "Id": "83cbd0f0-ee3f-40ff-a187-c431a61da8ca",
-    "FullName": "Stepan Stepanenko",
-    "Rank": "Major",
-    "UnitName": "7th Tactical Aviation Brigade",
-    "Story": "",
+    "Specialization": "\u043B\u043E\u0445",
+    "Id": "f8a29a37-1e5e-4b01-a0a1-a6313e3c80ba",
+    "FullName": "Dmytro Kukharchuk",
+    "Rank": 16,
+    "UnitName": "3rd Assault Brigade",
+    "Story": "He was born June 4, 1990, in Vinnytsia. He graduated Cherkasy National University, received a bachelor\u0027s degree in philosophy. He later worked as a freelance journalist. At the turn of the 2000s and 2010s, he actively participated in the activities of the Ultras movement in Cherkasy.\n\nAn active participant in the Revolution of Dignity, he took part in the storming of the Cherkasy Regional State Administration and 2014 Hrushevskoho Street riots in Kyiv. In the spring of 2014 he became a volunteer in Azov Battalion. He took part in fighting in eastern Ukraine, in particular in Battle of Marinka, Battle of Ilovaisk and Shyrokyne standoff.\n\nIn an interview with the Ukrainian army\u0027s Armiya TV in June 2024, he said that numerous times during the war, the Azov Brigade had been used as blocking troops.[8] He then gave a detailed account of an instance of his unit being used as barrier troops in 2022 saying, \u0022We were motivational troops then. We then helped the 110th brigade of the TRO. I can\u0027t say anything bad about them, because for a TRO they fought quite well, but, again, as a TRO they had to be motivated. And then my detachment\u2014I was then the commander of a detachment of 500 men\u2014was evenly distributed along a 25-kilometer line to assist units of the 110th brigade in their positions.\u0022",
     "Branch": 1,
-    "PhotoUrl": null
-  },
-  {
-    "$type": "infantry",
-    "Specialization": "combat",
-    "Id": "4ebaed00-23cb-4ebd-aa0d-9608e5fff6cb",
-    "FullName": "test",
-    "Rank": "test",
-    "UnitName": "test",
-    "Story": "test\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\u0456",
-    "Branch": 0,
-    "PhotoUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a8/%D0%9A%D1%83%D1%85%D0%B0%D1%80%D1%87%D1%83%D0%BA_%D0%94%D0%BC%D0%B8%D1%82%D1%80%D0%BE_%D0%92%D0%B0%D1%81%D0%B8%D0%BB%D1%8C%D0%BE%D0%B2%D0%B8%D1%87_%22%D0%A1%D0%BB%D1%96%D0%BF%22.jpg"
+    "PhotoUrl": ""
   }
 ]
