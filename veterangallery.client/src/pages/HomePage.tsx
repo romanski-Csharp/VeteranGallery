@@ -32,7 +32,6 @@ const HomePage = () => {
             }
         };
 
-        // Затримка 300мс (щоб не слати запити при кожній введеній букві)
         const delay = setTimeout(() => { loadData(); }, 300);
         return () => clearTimeout(delay);
 
@@ -53,7 +52,7 @@ const HomePage = () => {
                     </Link>
                 </div>
 
-                {loading ? (
+                {loading && veterans.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b', fontWeight: '600' }}>Loading heroes...</div>
                 ) : veterans.length === 0 ? (
                     <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b' }}>
@@ -61,9 +60,18 @@ const HomePage = () => {
                         <h3>No records found</h3>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
+                    <div
+                        key={`${activeBranch}-${searchQuery}-${sortBy}`}
+                        style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                            gap: '2rem',
+                            opacity: loading ? 0.4 : 1,
+                            transition: 'opacity 0.2s ease-in-out'
+                        }}
+                    >
                         {veterans.map((v, index) => (
-                            <div key={`${v.id}-${sortBy}`} style={{ animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`, animationDelay: `${index * 0.05}s`, opacity: 0 }}>
+                            <div key={v.id} style={{ animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`, animationDelay: `${index * 0.05}s`, opacity: 0 }}>
                                 <VeteranCard veteran={v} />
                             </div>
                         ))}
@@ -71,7 +79,6 @@ const HomePage = () => {
                 )}
             </main>
 
-            {/* РЯДОК СТАНУ (STATUS BAR) згідно з п.2 та п.8 методички */}
             <footer style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#0f172a', color: '#cbd5e1', padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', zIndex: 100, boxShadow: '0 -4px 6px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Activity className="w-4 h-4" style={{ color: '#22c55e' }} />
@@ -82,7 +89,6 @@ const HomePage = () => {
                     <span>Total Profiles: <strong style={{ color: 'white' }}>{veterans.length}</strong></span>
                     <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Infantry: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
                     <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Aviation: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
-                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Drone Op: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'drone_op').length}</strong></span>
                 </div>
             </footer>
         </div>

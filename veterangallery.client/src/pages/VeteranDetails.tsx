@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plane, Users, Anchor, Crosshair, HelpCircle, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
-import AddVeteranForm from '../components/AddVeteranForm'; 
+import AddVeteranForm from '../components/AddVeteranForm';
 import type { Veteran, Pilot, Infantryman } from '../types/veteran';
 
 const VeteranDetails = () => {
@@ -97,7 +97,7 @@ const VeteranDetails = () => {
             const i = veteran as Infantryman;
             return (
                 <div style={{ backgroundColor: '#f0fdf4', padding: '1.25rem', borderRadius: '12px', marginTop: '1.5rem', borderLeft: '4px solid #22c55e' }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '0.9rem', textTransform: 'uppercase' }}>Infantry Specialization</h4>
+                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '0.9rem', textTransform: 'uppercase' }}>Infantry/Naval Specialization</h4>
                     <p style={{ margin: '0.25rem 0' }}><strong>Military Role:</strong> {i.specialization}</p>
                 </div>
             );
@@ -107,7 +107,7 @@ const VeteranDetails = () => {
 
     return (
         <div
-            style={{ position: 'fixed', inset: 0, zIndex: 100, backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
+            style={{ position: 'fixed', inset: 0, zIndex: 100, backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
             onClick={handleClose}
         >
             <div
@@ -120,7 +120,7 @@ const VeteranDetails = () => {
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
-                
+
                 <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 20 }}>
                     <button
                         onClick={() => setShowMenu(!showMenu)}
@@ -154,7 +154,7 @@ const VeteranDetails = () => {
                     )}
                 </div>
 
-                <div style={{ width: '42%', flexShrink: 0, backgroundColor: '#1e293b' }}>
+                <div style={{ width: '42%', flexShrink: 0, backgroundColor: '#1e293b', borderTopLeftRadius: '24px', borderBottomLeftRadius: '24px', overflow: 'hidden' }}>
                     <img
                         src={veteran.photoUrl || '/default-hero.png'}
                         alt={veteran.fullName}
@@ -163,7 +163,7 @@ const VeteranDetails = () => {
                     />
                 </div>
 
-                <div style={{ flex: '1', padding: '3rem 2.5rem', overflowY: 'auto' }}>
+                <div className="custom-scroll" style={{ flex: '1', padding: '3rem 2.5rem', overflowY: 'auto' }}>
                     {isEditing ? (
                         <AddVeteranForm
                             veteranToEdit={veteran}
@@ -198,6 +198,17 @@ const VeteranDetails = () => {
                 @keyframes modalFadeIn {
                     from { opacity: 0; transform: scale(0.95) translateY(20px); }
                     to { opacity: 1; transform: scale(1) translateY(0); }
+                }
+                .custom-scroll::-webkit-scrollbar { 
+                    width: 14px; 
+                }
+                .custom-scroll::-webkit-scrollbar-track { 
+                    background: transparent; 
+                }
+                .custom-scroll::-webkit-scrollbar-thumb { 
+                    background-color: #cbd5e1; 
+                    border-radius: 20px; 
+                    border: 4px solid white;
                 }
                 `}
             </style>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { apiClient, updateVeteran } from '../api/apiClient';
 import { MilitaryBranch, MilitaryRank, getRankDisplayName } from '../types/veteran';
+import { CustomSelect } from './CustomSelect'; // Підключаємо наш новий архітектурний компонент
 
 interface Props {
     onSuccess: () => void;
@@ -17,16 +18,15 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     const [story, setStory] = useState(veteranToEdit?.story || '');
     const [branch, setBranch] = useState<MilitaryBranch>(veteranToEdit?.branch ?? MilitaryBranch.LandForces);
     const [photoUrl, setPhotoUrl] = useState(veteranToEdit?.photoUrl || '');
-
-    const [specialization, setSpecialization] = useState(veteranToEdit?.$type === 'infantry' ? veteranToEdit.specialization : '');
-    const [vehicleModel, setVehicleModel] = useState(veteranToEdit?.$type === 'pilot' ? veteranToEdit.vehicleModel : '');
-    const [experience, setExperience] = useState<number>(veteranToEdit?.$type === 'pilot' ? veteranToEdit.experienceValue : 0);
+    const [specialization, setSpecialization] = useState(veteranToEdit?.specialization || '');
+    const [vehicleModel, setVehicleModel] = useState(veteranToEdit?.vehicleModel || '');
+    const [experience, setExperience] = useState<number>(veteranToEdit?.experienceValue || 0);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const hasUnsavedChanges = () => {
         if (!isEditMode) {
-            return fullName || rank || unitName || story || photoUrl || specialization || vehicleModel || experience > 0;
+            return fullName || rank !== MilitaryRank.SoldierOrSailor || unitName || story || photoUrl || specialization || vehicleModel || experience > 0;
         }
         const basicChanged = fullName !== veteranToEdit.fullName ||
             rank !== veteranToEdit.rank ||
@@ -85,10 +85,22 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     };
 
     const labelStyle = { display: 'block', fontSize: '0.85rem', fontWeight: '600', color: '#475569', marginBottom: '6px' };
-    const inputStyle = { width: '100%', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.95rem', color: '#0f172a', outline: 'none', boxSizing: 'border-box' as const, transition: 'all 0.2s' };
+    const inputStyle = { width: '100%', padding: '10px 14px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '0.95rem', color: '#0f172a', outline: 'none', boxSizing: 'border-box' as const, transition: 'all 0.2s', backgroundColor: 'white' };
 
     const handleFocus = (e: any) => { e.target.style.borderColor = '#2563eb'; e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)'; };
     const handleBlur = (e: any) => { e.target.style.borderColor = '#cbd5e1'; e.target.style.boxShadow = 'none'; };
+
+    const rankOptions = (Object.values(MilitaryRank) as MilitaryRank[]).map(val => ({
+        label: getRankDisplayName(val, branch),
+        value: val
+    }));
+
+    const branchOptions = [
+        { label: 'Land Forces', value: MilitaryBranch.LandForces },
+        { label: 'Air Force', value: MilitaryBranch.AirForce },
+        { label: 'Air Assault Forces', value: MilitaryBranch.AirAssault },
+        { label: 'Navy', value: MilitaryBranch.Navy }
+    ];
 
     return (
         <div style={{ background: 'white', padding: isEditMode ? '0' : '2.5rem', borderRadius: '16px' }}>
@@ -117,20 +129,11 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Rank</label>
-                            <select
-                                required
-                                style={inputStyle}
+                            <CustomSelect
                                 value={rank}
-                                onChange={e => setRank(Number(e.target.value) as MilitaryRank)}
-                                onFocus={handleFocus}
-                                onBlur={handleBlur}
-                            >
-                                {(Object.values(MilitaryRank) as MilitaryRank[]).map(value => (
-                                    <option key={value} value={value}>
-                                        {getRankDisplayName(value, branch)}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(val) => setRank(val)}
+                                options={rankOptions}
+                            />
                         </div>
                         <div>
                             <label style={labelStyle}>Military Unit</label>
@@ -144,10 +147,12 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Branch</label>
-                            <select disabled={isEditMode} style={inputStyle} value={branch} onChange={e => setBranch(Number(e.target.value) as MilitaryBranch)} onFocus={handleFocus} onBlur={handleBlur}>
-                                <option value={MilitaryBranch.LandForces}>Land Forces</option>
-                                <option value={MilitaryBranch.AirForce}>Air Force</option>
-                            </select>
+                            <CustomSelect
+                                value={branch}
+                                onChange={(val) => setBranch(val)}
+                                options={branchOptions}
+                                disabled={isEditMode}
+                            />
                         </div>
                         <div>
                             <label style={labelStyle}>Image URL</label>
@@ -171,7 +176,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                         </div>
                     ) : (
                         <div>
-                            <label style={labelStyle}>Infantry Specialization</label>
+                            <label style={labelStyle}>Infantry/Naval Specialization</label>
                             <input required style={inputStyle} value={specialization} onChange={e => setSpecialization(e.target.value)} onFocus={handleFocus} onBlur={handleBlur} />
                         </div>
                     )}
