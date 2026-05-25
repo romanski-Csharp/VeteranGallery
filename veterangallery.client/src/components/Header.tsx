@@ -5,9 +5,10 @@ import { MilitaryBranch } from '../types/veteran';
 interface Props {
     onFilterChange: (branch: number | null) => void;
     onSearchChange: (query: string) => void;
+    onSortChange: (sort: string) => void;
 }
 
-const Header = ({ onFilterChange, onSearchChange }: Props) => {
+const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
     const [activeFilter, setActiveFilter] = useState<number | null>(null);
 
     const handleFilter = (branch: number | null) => {
@@ -59,44 +60,75 @@ const Header = ({ onFilterChange, onSearchChange }: Props) => {
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ width: '40px', height: '40px', backgroundColor: '#0f172a', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '900', fontSize: '1.2rem', letterSpacing: '-1px' }}>
-                    V
+                    VG
                 </div>
                 <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
                     Veteran Gallery
                 </h1>
             </div>
 
-            <div style={{ flex: 1, maxWidth: '400px', position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '50%', left: '12px', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex' }}>
-                    <Search className="w-4 h-4" />
+            <div style={{ flex: 1, maxWidth: '600px', display: 'flex', gap: '1rem', position: 'relative' }}>
+                <div style={{ flex: 1, position: 'relative' }}>
+                    <div style={{ position: 'absolute', top: '50%', left: '12px', transform: 'translateY(-50%)', color: '#94a3b8', display: 'flex' }}>
+                        <Search className="w-4 h-4" />
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search by name, rank, unit, or spec..."
+                        onChange={(e) => onSearchChange(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '10px 16px 10px 36px',
+                            borderRadius: '9999px',
+                            border: '1px solid #e2e8f0',
+                            backgroundColor: '#f8fafc',
+                            fontSize: '0.9rem',
+                            color: '#0f172a',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            transition: 'all 0.2s'
+                        }}
+                        onFocus={(e) => {
+                            e.target.style.borderColor = '#94a3b8';
+                            e.target.style.backgroundColor = '#ffffff';
+                            e.target.style.boxShadow = '0 0 0 3px rgba(148, 163, 184, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                            e.target.style.borderColor = '#e2e8f0';
+                            e.target.style.backgroundColor = '#f8fafc';
+                            e.target.style.boxShadow = 'none';
+                        }}
+                    />
                 </div>
-                <input
-                    type="text"
-                    placeholder="Search by name, rank, unit, or spec..."
-                    onChange={(e) => onSearchChange(e.target.value)}
+
+                <select
+                    onChange={(e) => onSortChange(e.target.value)}
                     style={{
-                        width: '100%',
-                        padding: '10px 16px 10px 36px',
+                        padding: '10px 16px',
                         borderRadius: '9999px',
                         border: '1px solid #e2e8f0',
-                        backgroundColor: '#f8fafc',
-                        fontSize: '0.9rem',
-                        color: '#0f172a',
                         outline: 'none',
-                        boxSizing: 'border-box',
+                        backgroundColor: '#f8fafc',
+                        color: '#475569',
+                        fontSize: '0.9rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
                         transition: 'all 0.2s'
                     }}
                     onFocus={(e) => {
                         e.target.style.borderColor = '#94a3b8';
                         e.target.style.backgroundColor = '#ffffff';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(148, 163, 184, 0.1)';
                     }}
                     onBlur={(e) => {
                         e.target.style.borderColor = '#e2e8f0';
                         e.target.style.backgroundColor = '#f8fafc';
-                        e.target.style.boxShadow = 'none';
                     }}
-                />
+                >
+                    <option value="">Sort: Newest First</option>
+                    <option value="name_asc">Name: A to Z</option>
+                    <option value="name_desc">Name: Z to A</option>
+                    <option value="rank">Rank: High to Low</option>
+                </select>
             </div>
 
             <nav style={{ display: 'flex', gap: '4px', background: '#f1f5f9', padding: '4px', borderRadius: '9999px', border: '1px solid #e2e8f0', overflowX: 'auto' }}>

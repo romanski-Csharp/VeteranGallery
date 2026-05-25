@@ -16,9 +16,12 @@ public class VeteransController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Veteran>>> GetAll()
+    public async Task<ActionResult<IEnumerable<Veteran>>> GetAll(
+        [FromQuery] string? search = null,
+        [FromQuery] int? branch = null,
+        [FromQuery] string? sortBy = null)
     {
-        var veterans = await _repository.GetAllAsync();
+        var veterans = await _repository.GetAllAsync(search, branch, sortBy);
         return Ok(veterans);
     }
 

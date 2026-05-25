@@ -1,13 +1,36 @@
 [
   {
     "$type": "infantry",
-    "Specialization": "\u043B\u043E\u0445",
+    "Specialization": "\u0441\u0456\u0433\u043C\u0430",
     "Id": "f8a29a37-1e5e-4b01-a0a1-a6313e3c80ba",
     "FullName": "Dmytro Kukharchuk",
     "Rank": 16,
     "UnitName": "3rd Assault Brigade",
     "Story": "He was born June 4, 1990, in Vinnytsia. He graduated Cherkasy National University, received a bachelor\u0027s degree in philosophy. He later worked as a freelance journalist. At the turn of the 2000s and 2010s, he actively participated in the activities of the Ultras movement in Cherkasy.\n\nAn active participant in the Revolution of Dignity, he took part in the storming of the Cherkasy Regional State Administration and 2014 Hrushevskoho Street riots in Kyiv. In the spring of 2014 he became a volunteer in Azov Battalion. He took part in fighting in eastern Ukraine, in particular in Battle of Marinka, Battle of Ilovaisk and Shyrokyne standoff.\n\nIn an interview with the Ukrainian army\u0027s Armiya TV in June 2024, he said that numerous times during the war, the Azov Brigade had been used as blocking troops.[8] He then gave a detailed account of an instance of his unit being used as barrier troops in 2022 saying, \u0022We were motivational troops then. We then helped the 110th brigade of the TRO. I can\u0027t say anything bad about them, because for a TRO they fought quite well, but, again, as a TRO they had to be motivated. And then my detachment\u2014I was then the commander of a detachment of 500 men\u2014was evenly distributed along a 25-kilometer line to assist units of the 110th brigade in their positions.\u0022",
     "Branch": 1,
+    "PhotoUrl": ""
+  },
+  {
+    "$type": "infantry",
+    "Specialization": "gg",
+    "Id": "5b837f68-3ddb-4b93-8190-fb0052cb2c70",
+    "FullName": "test",
+    "Rank": 5,
+    "UnitName": "2st b",
+    "Story": "test",
+    "Branch": 1,
+    "PhotoUrl": ""
+  },
+  {
+    "$type": "pilot",
+    "VehicleModel": "testPilot",
+    "ExperienceValue": 1488,
+    "Id": "95ea2556-abbc-4860-bdd4-aa2a41384764",
+    "FullName": "testPilot",
+    "Rank": 15,
+    "UnitName": "testPilot",
+    "Story": "testPilot",
+    "Branch": 2,
     "PhotoUrl": ""
   }
 ]

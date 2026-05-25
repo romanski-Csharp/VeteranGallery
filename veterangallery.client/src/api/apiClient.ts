@@ -7,8 +7,14 @@ export const apiClient = axios.create({
     }
 });
 
-export const getVeterans = async () => {
-    const response = await apiClient.get('/veterans');
+export const getVeterans = async (search?: string, branch?: number | null, sortBy?: string) => {
+    const params = new URLSearchParams();
+
+    if (search) params.append('search', search);
+    if (branch !== null && branch !== undefined) params.append('branch', branch.toString());
+    if (sortBy) params.append('sortBy', sortBy);
+
+    const response = await apiClient.get(`/veterans?${params.toString()}`);
     return response.data;
 };
 

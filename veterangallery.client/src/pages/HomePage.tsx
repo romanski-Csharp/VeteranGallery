@@ -1,127 +1,90 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusCircle, RefreshCw, SearchX } from 'lucide-react';
+import { PlusCircle, SearchX, Activity } from 'lucide-react';
 import Header from '../components/Header';
 import VeteranCard from '../components/VeteranCard';
 import { getVeterans } from '../api/apiClient';
-import type { Veteran, Pilot, Infantryman, DroneOperator } from '../types/veteran';
+import type { Veteran } from '../types/veteran';
 
 const HomePage = () => {
-    const [allVeterans, setAllVeterans] = useState<Veteran[]>([]);
-    const [filteredVeterans, setFilteredVeterans] = useState<Veteran[]>([]);
+    const [veterans, setVeterans] = useState<Veteran[]>([]);
 
     const [activeBranch, setActiveBranch] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('');
 
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const loadData = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await getVeterans();
-            setAllVeterans(data);
-        } catch (error) {
-            console.error("Loading error:", error);
-            setError("Cannot connect to server. The backend might still be starting...");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const [statusMessage, setStatusMessage] = useState('System Online');
 
     useEffect(() => {
-        loadData();
-    }, []);
+        const loadData = async () => {
+            setLoading(true);
+            setStatusMessage('Fetching data from server...');
+            try {
+                const data = await getVeterans(searchQuery, activeBranch, sortBy);
+                setVeterans(data);
+                setStatusMessage('Data synchronized');
+            } catch (error) {
+                console.error("Loading error:", error);
+                setStatusMessage('Error: Cannot connect to server');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    useEffect(() => {
-        let result = allVeterans;
+        // Затримка 300мс (щоб не слати запити при кожній введеній букві)
+        const delay = setTimeout(() => { loadData(); }, 300);
+        return () => clearTimeout(delay);
 
-        if (activeBranch !== null) {
-            result = result.filter(v => v.branch === activeBranch);
-        }
-
-        if (searchQuery.trim() !== '') {
-            const q = searchQuery.toLowerCase();
-            result = result.filter(v => {
-                const matchName = v.fullName.toLowerCase().includes(q);
-                const matchUnit = v.unitName.toLowerCase().includes(q);
-                const matchRank = v.rank.toLowerCase().includes(q);
-
-                let matchSpecial = false;
-                if (v.$type === 'pilot') {
-                    matchSpecial = (v as Pilot).vehicleModel.toLowerCase().includes(q);
-                } else if (v.$type === 'infantry') {
-                    matchSpecial = (v as Infantryman).specialization.toLowerCase().includes(q);
-                } else if (v.$type === 'drone_op') {
-                    matchSpecial = (v as DroneOperator).vehicleModel.toLowerCase().includes(q);
-                }
-
-                return matchName || matchUnit || matchRank || matchSpecial;
-            });
-        }
-
-        setFilteredVeterans(result);
-    }, [allVeterans, activeBranch, searchQuery]);
+    }, [activeBranch, searchQuery, sortBy]);
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#f8fafc', backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc', backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px', paddingBottom: '40px' }}>
             <Header
                 onFilterChange={setActiveBranch}
                 onSearchChange={setSearchQuery}
+                onSortChange={setSortBy}
             />
 
-            <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+            <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '2rem' }}>
                 <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-                    <Link
-                        to="/add-veteran"
-                        style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            backgroundColor: '#0f172a', color: 'white', padding: '0.75rem 1.5rem',
-                            borderRadius: '9999px', textDecoration: 'none', fontWeight: '600',
-                            boxShadow: '0 4px 15px rgba(15, 23, 42, 0.2)', transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
+                    <Link to="/add-veteran" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#0f172a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '9999px', textDecoration: 'none', fontWeight: '600', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
                         <PlusCircle className="w-5 h-5" /> Add New Profile
                     </Link>
                 </div>
 
-                {error ? (
-                    <div style={{ textAlign: 'center', marginTop: '4rem', padding: '2rem', background: 'white', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.05)', border: '1px solid #fee2e2' }}>
-                        <p style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '1rem' }}>{error}</p>
-                        <button onClick={loadData} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.5rem', backgroundColor: '#dc2626', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
-                            <RefreshCw className="w-4 h-4" /> Try Again
-                        </button>
-                    </div>
-                ) : loading ? (
-                    <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b', fontWeight: '600', fontSize: '1.1rem' }}>
-                        <div style={{ animation: 'fadeInUp 1s infinite alternate' }}>Loading heroes...</div>
-                    </div>
-                ) : filteredVeterans.length === 0 ? (
-                    <div style={{ textAlign: 'center', marginTop: '4rem', padding: '3rem 1rem', color: '#64748b', animation: 'fadeInUp 0.4s ease-out' }}>
+                {loading ? (
+                    <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b', fontWeight: '600' }}>Loading heroes...</div>
+                ) : veterans.length === 0 ? (
+                    <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b' }}>
                         <SearchX className="w-16 h-16" style={{ margin: '0 auto 1rem auto', opacity: 0.5 }} />
-                        <h3 style={{ fontSize: '1.25rem', color: '#334155', margin: '0 0 0.5rem 0' }}>No heroes found</h3>
-                        <p style={{ margin: 0 }}>Try adjusting your filters or search terms.</p>
+                        <h3>No records found</h3>
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem' }}>
-                        {filteredVeterans.map((v, index) => (
-                            <div
-                                key={v.id}
-                                style={{
-                                    animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`,
-                                    animationDelay: `${index * 0.05}s`,
-                                    opacity: 0
-                                }}
-                            >
+                        {veterans.map((v, index) => (
+                            <div key={`${v.id}-${sortBy}`} style={{ animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`, animationDelay: `${index * 0.05}s`, opacity: 0 }}>
                                 <VeteranCard veteran={v} />
                             </div>
                         ))}
                     </div>
                 )}
             </main>
+
+            {/* РЯДОК СТАНУ (STATUS BAR) згідно з п.2 та п.8 методички */}
+            <footer style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#0f172a', color: '#cbd5e1', padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', zIndex: 100, boxShadow: '0 -4px 6px rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Activity className="w-4 h-4" style={{ color: '#22c55e' }} />
+                    <span style={{ fontWeight: '500', color: 'white' }}>Status:</span> {statusMessage}
+                </div>
+
+                <div style={{ display: 'flex', gap: '1.5rem', fontWeight: '500' }}>
+                    <span>Total Profiles: <strong style={{ color: 'white' }}>{veterans.length}</strong></span>
+                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Infantry: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
+                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Aviation: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
+                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Drone Op: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'drone_op').length}</strong></span>
+                </div>
+            </footer>
         </div>
     );
 };
