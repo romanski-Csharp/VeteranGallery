@@ -8,6 +8,7 @@ import type { Veteran } from '../types/veteran';
 
 const HomePage = () => {
     const [veterans, setVeterans] = useState<Veteran[]>([]);
+    const [gridKey, setGridKey] = useState(0);
 
     const [activeBranch, setActiveBranch] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +24,9 @@ const HomePage = () => {
             try {
                 const data = await getVeterans(searchQuery, activeBranch, sortBy);
                 setVeterans(data);
+
+                setGridKey(prev => prev + 1);
+
                 setStatusMessage('Data synchronized');
             } catch (error) {
                 console.error("Loading error:", error);
@@ -61,7 +65,7 @@ const HomePage = () => {
                     </div>
                 ) : (
                     <div
-                        key={`${activeBranch}-${searchQuery}-${sortBy}`}
+                        key={gridKey}
                         style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',

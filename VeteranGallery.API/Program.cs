@@ -1,9 +1,13 @@
 using System.Text.Json.Serialization.Metadata;
+using Scalar.AspNetCore;
 using VeteranGallery.API.Data;
 using VeteranGallery.Domain.Interfaces;
-using Scalar.AspNetCore;
+
+DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+
+MongoDbConfig.Initialize();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -19,15 +23,18 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:58294")
+            policy.WithOrigins("http://localhost:58294", "https://localhost:5173", "http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
-builder.Services.AddSingleton<IVeteranRepository, JsonVeteranRepository>();
+builder.Services.AddScoped<IVeteranRepository, MongoVeteranRepository>();
 
 var app = builder.Build();
+
+app.UseDefaultFiles();
+app.MapStaticAssets();
 
 app.UseRouting();
 
@@ -44,5 +51,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapFallbackToFile("/index.html");
 
 app.Run();
