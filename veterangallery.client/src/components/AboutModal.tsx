@@ -10,95 +10,59 @@ const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
 
     return (
         <div
-            style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 200,
-                backgroundColor: 'rgba(15, 23, 42, 0.7)',
-                backdropFilter: 'blur(6px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '2rem'
-            }}
+            className="fixed inset-0 z-[200] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-8"
             onClick={onClose}
         >
             <div
-                style={{
-                    background: 'white',
-                    borderRadius: '24px',
-                    width: '100%',
-                    maxWidth: '650px',
-                    display: 'flex',
-                    overflow: 'hidden',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-                    position: 'relative',
-                    animation: 'aboutModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-                }}
+                className="bg-white rounded-3xl w-full max-w-[650px] flex overflow-hidden shadow-2xl relative"
+                style={{ animation: 'aboutModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
                 onClick={e => e.stopPropagation()}
             >
                 <button
                     onClick={onClose}
-                    style={{
-                        position: 'absolute',
-                        top: '16px',
-                        right: '16px',
-                        background: '#f1f5f9',
-                        border: 'none',
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        color: '#64748b',
-                        transition: 'all 0.2s'
-                    }}
-                    onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-                    onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+                    className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 border-none w-8 h-8 rounded-full flex items-center justify-center cursor-pointer text-slate-500 hover:text-slate-700 transition-all duration-200"
                 >
-                    <X className="w-4 h-4" />
+                    <X size={16} />
                 </button>
 
-                <div style={{ width: '38%', flexShrink: 0, backgroundColor: '#0f172a', position: 'relative' }}>
+                <div className="w-[38%] shrink-0 bg-slate-900 relative">
                     <img
                         src="/developer.jpg"
                         alt="Developer"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', aspectRatio: '3/4' }}
+                        className="w-full h-full object-cover aspect-[3/4]"
                         onError={(e) => {
                             e.currentTarget.src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=500&fit=crop";
                         }}
                     />
                 </div>
 
-                <div style={{ flex: 1, padding: '2.5rem 2rem' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f8fafc', border: '1px solid #e2e8f0', padding: '6px 12px', borderRadius: '9999px', color: '#0f172a', fontWeight: '600', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                        <Award className="w-4 h-4 text-amber-500" />
+                <div className="flex-1 p-10 px-8">
+                    <div className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full text-slate-900 font-semibold text-[0.8rem] mb-4">
+                        <Award size={16} color="#f59e0b" />
                         OOP Coursework 2026
                     </div>
 
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.5px' }}>
+                    <h3 className="m-0 mb-1 text-2xl font-extrabold text-slate-900 tracking-[-0.5px]">
                         Chub Roman
                     </h3>
-                    <p style={{ margin: '0 0 1.5rem 0', color: '#2563eb', fontSize: '0.9rem', fontWeight: '600' }}>
+                    <p className="m-0 mb-6 text-blue-600 text-[0.9rem] font-semibold">
                         Developer • Student of Group CS-24
                     </p>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '1.25rem' }}>
+                    <div className="flex flex-col gap-4 border-t border-slate-100 pt-5">
                         <div>
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '0.8rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.5px' }}>Project Theme</h4>
-                            <p style={{ margin: 0, color: '#334155', fontSize: '0.9rem', lineHeight: '1.5', fontWeight: '500' }}>
+                            <h4 className="m-0 mb-1 text-[0.8rem] uppercase text-slate-400 font-bold tracking-[0.5px]">Project Theme</h4>
+                            <p className="m-0 text-slate-700 text-[0.9rem] leading-relaxed font-medium">
                                 Web-application "Veteran Gallery" is a modern web application designed to showcase the stories and achievements of our brave veterans.
                             </p>
                         </div>
 
                         <div>
-                            <h4 style={{ margin: '0 0 6px 0', fontSize: '0.8rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: '700', letterSpacing: '0.5px' }}>Technology Stack</h4>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            <h4 className="m-0 mb-1.5 text-[0.8rem] uppercase text-slate-400 font-bold tracking-[0.5px]">Technology Stack</h4>
+                            <div className="flex flex-wrap gap-1.5">
                                 {['.NET', 'SQL', 'React', 'TypeScript'].map(tech => (
-                                    <span key={tech} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#f1f5f9', color: '#475569', padding: '4px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '600' }}>
-                                        <Code2 className="w-3 h-3 text-slate-400" /> {tech}
+                                    <span key={tech} className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[0.75rem] font-semibold">
+                                        <Code2 size={12} color="#94a3b8" /> {tech}
                                     </span>
                                 ))}
                             </div>

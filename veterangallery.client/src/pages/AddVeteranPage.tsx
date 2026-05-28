@@ -10,23 +10,13 @@ const AddVeteranPage = () => {
     };
 
     return (
-        <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '0 1rem' }}>
-            <div style={{ marginBottom: '1.5rem' }}>
+        <div className="max-w-[600px] my-8 mx-auto px-4">
+            <div className="mb-6">
                 <button
                     onClick={() => navigate('/')}
-                    style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        color: '#475569',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontWeight: '500',
-                        fontSize: '1rem'
-                    }}
+                    className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 bg-transparent border-none cursor-pointer font-medium text-base transition-colors"
                 >
-                    <ArrowLeft className="w-5 h-5" /> Back to Gallery
+                    <ArrowLeft size={20} /> Back to Gallery
                 </button>
             </div>
             <AddVeteranForm onSuccess={handleSuccess} />

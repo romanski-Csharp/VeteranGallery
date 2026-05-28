@@ -1,4 +1,4 @@
-﻿using MongoDB.Driver;
+using MongoDB.Driver;
 using VeteranGallery.Domain.Entities;
 using VeteranGallery.Domain.Interfaces;
 
@@ -21,7 +21,7 @@ public class MongoVeteranRepository : IVeteranRepository
 
     public async Task<IEnumerable<Veteran>> GetAllAsync(string? search = null, int? branch = null, string? sortBy = null)
     {
-        var all = await _veterans.Find(_ => true).ToListAsync();
+        var all = await _veterans.Find(v => v.IsDeleted == false).ToListAsync();
 
         if (branch.HasValue)
         {
@@ -35,7 +35,8 @@ public class MongoVeteranRepository : IVeteranRepository
                 v.FullName.ToLower().Contains(q) ||
                 v.UnitName.ToLower().Contains(q) ||
                 (v is Pilot p && p.VehicleModel.ToLower().Contains(q)) ||
-                (v is Infantryman i && i.Specialization.ToLower().Contains(q))
+                (v is Infantryman i && i.Specialization.ToLower().Contains(q)) ||
+                (v is Navy n && n.Specialization.ToLower().Contains(q))
             ).ToList();
         }
 
@@ -44,7 +45,7 @@ public class MongoVeteranRepository : IVeteranRepository
             "name_asc" => all.OrderBy(v => v.FullName).ToList(),
             "name_desc" => all.OrderByDescending(v => v.FullName).ToList(),
             "rank" => all.OrderByDescending(v => (int)v.Rank).ThenBy(v => v.FullName).ToList(),
-            _ => all.OrderByDescending(v => v.Id).ToList()
+            _ => all.OrderByDescending(v => v.CreatedAt).ToList()
         };
 
         return all;
@@ -67,6 +68,7 @@ public class MongoVeteranRepository : IVeteranRepository
 
     public async Task DeleteAsync(Guid id)
     {
-        await _veterans.DeleteOneAsync(v => v.Id == id);
+        var update = Builders<Veteran>.Update.Set(v => v.IsDeleted, true);
+        await _veterans.UpdateOneAsync(v => v.Id == id, update);
     }
 }

@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using VeteranGallery.Domain.Entities;
@@ -27,6 +27,7 @@ public static class MongoDbConfig
                 cm.AddKnownType(typeof(Pilot));
                 cm.AddKnownType(typeof(Infantryman));
                 cm.AddKnownType(typeof(DroneOperator));
+                cm.AddKnownType(typeof(Navy));
 
             });
 

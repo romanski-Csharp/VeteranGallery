@@ -56,6 +56,11 @@ export interface Infantryman extends Veteran {
     specialization: string;
 }
 
+export interface Navy extends Veteran {
+    $type: 'navy';
+    specialization: string;
+}
+
 export interface DroneOperator extends Veteran {
     $type: 'drone_op';
     vehicleModel: string;

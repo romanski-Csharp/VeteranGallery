@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
-import type { Veteran, Pilot, Infantryman, DroneOperator } from '../types/veteran';
+import type { Veteran, Pilot, Infantryman, DroneOperator, Navy } from '../types/veteran';
 
 
 interface Props {
@@ -24,7 +24,7 @@ const VeteranCard = ({ veteran }: Props) => {
         if (veteran.$type === 'pilot') {
             const p = veteran as Pilot;
             return (
-                <div style={{ fontSize: '0.85rem', color: '#93c5fd', marginTop: '4px' }}>
+                <div className="text-[0.85rem] text-blue-300 mt-1">
                     {p.vehicleModel} • {p.experienceValue} hrs
                 </div>
             );
@@ -32,15 +32,23 @@ const VeteranCard = ({ veteran }: Props) => {
         if (veteran.$type === 'infantry') {
             const i = veteran as Infantryman;
             return (
-                <div style={{ fontSize: '0.85rem', color: '#86efac', marginTop: '4px' }}>
+                <div className="text-[0.85rem] text-green-300 mt-1">
                     {i.specialization}
+                </div>
+            );
+        }
+        if (veteran.$type === 'navy') {
+            const n = veteran as Navy;
+            return (
+                <div className="text-[0.85rem] text-sky-300 mt-1">
+                    {n.specialization}
                 </div>
             );
         }
         if (veteran.$type === 'drone_op') {
             const d = veteran as DroneOperator;
             return (
-                <div style={{ fontSize: '0.85rem', color: '#d8b4fe', marginTop: '4px' }}>
+                <div className="text-[0.85rem] text-purple-300 mt-1">
                     {d.vehicleModel} • {d.experienceValue} sorties
                 </div>
             );
@@ -52,63 +60,24 @@ const VeteranCard = ({ veteran }: Props) => {
         <Link
             to={`/veteran/${veteran.id}`}
             state={{ background: location }}
-            style={{
-                display: 'block',
-                textDecoration: 'none',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                position: 'relative',
-                aspectRatio: '3/4', 
-                backgroundColor: '#1e293b',
-                boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s',
-                cursor: 'pointer'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            className="block no-underline rounded-2xl overflow-hidden relative aspect-[3/4] bg-slate-800 shadow-md transition-transform duration-200 cursor-pointer hover:scale-[1.03]"
         >
             <img
                 src={veteran.photoUrl || '/default-hero.png'}
                 alt={veteran.fullName}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                }}
+                className="w-full h-full object-cover block"
                 onError={(e) => { e.currentTarget.src = '/default-hero.png'; }}
             />
 
-            <div style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                backgroundColor: 'rgba(0, 0, 0, 0.65)', 
-                color: 'white',
-                padding: '4px 12px',
-                borderRadius: '20px',
-                fontSize: '0.75rem',
-                fontWeight: 'bold',
-                backdropFilter: 'blur(4px)', 
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px'
-            }}>
+            <div className="absolute top-3 right-3 bg-black/65 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-xs uppercase tracking-[0.5px]">
                 {getBranchName()}
             </div>
 
-            <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: 'linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.6) 60%, transparent 100%)',
-                padding: '2.5rem 1rem 1rem 1rem', 
-                color: 'white'
-            }}>
-                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', fontWeight: 'bold' }}>
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/95 via-slate-900/60 to-transparent pt-10 px-4 pb-4 text-white">
+                <h3 className="m-0 mb-1 text-xl font-bold">
                     {veteran.fullName}
                 </h3>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: '#cbd5e1' }}>
+                <p className="m-0 text-sm text-slate-300">
                     {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                 </p>
                 {renderSpecializedInfo()}

@@ -40,76 +40,38 @@ export function CustomSelect<T extends string | number>({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const toggleStyle = {
-        width: '100%',
-        padding: '10px 14px',
-        border: '1px solid #cbd5e1',
-        borderRadius: borderRadius,
-        fontSize: '0.95rem',
-        color: '#0f172a',
-        outline: 'none',
-        boxSizing: 'border-box' as const,
-        transition: 'all 0.2s',
-        backgroundColor: 'white',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        opacity: disabled ? 0.7 : 1,
-        borderColor: isOpen ? '#2563eb' : '#cbd5e1',
-        boxShadow: isOpen ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none'
-    };
-
     return (
-        <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+        <div ref={containerRef} className="relative w-full">
             <button
                 type="button"
                 disabled={disabled}
                 onClick={() => setIsOpen(!isOpen)}
-                style={toggleStyle}
+                className={`w-full px-3.5 py-2.5 border text-[0.95rem] text-slate-900 outline-none box-border transition-all duration-200 bg-white flex justify-between items-center ${
+                    disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer opacity-100'
+                } ${
+                    isOpen 
+                        ? 'border-blue-600 ring-3 ring-blue-600/15' 
+                        : 'border-slate-300'
+                }`}
+                style={{ borderRadius }}
             >
-                <span style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    flex: 1, 
-                    textAlign: 'left' 
-                }}>
+                <span className="overflow-hidden text-ellipsis whitespace-nowrap flex-1 text-left">
                     {selectedOption ? selectedOption.label : placeholder}
                 </span>
                 <ChevronDown
-                    className="w-4 h-4"
-                    style={{
-                        color: '#64748b',
-                        transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s',
-                        flexShrink: 0,
-                        marginLeft: '8px'
-                    }}
+                    size={16}
+                    className={`text-slate-500 shrink-0 ml-2 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : 'rotate-0'
+                    }`}
                 />
             </button>
 
             {isOpen && (
                 <div
-                    className="custom-select-dropdown"
+                    className="custom-select-dropdown absolute left-0 w-max max-w-[300px] min-w-full bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 flex flex-col gap-0.5 z-[200] overflow-y-auto"
                     style={{
-                        position: 'absolute',
                         top: 'calc(100% + 6px)',
-                        left: 0,
-                        minWidth: '100%',
-                        width: 'max-content',
-                        maxWidth: '300px', 
-                        backgroundColor: '#ffffff',
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
-                        border: '1px solid #e2e8f0',
-                        padding: '6px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '2px',
-                        zIndex: 200,
-                        maxHeight: maxHeight,
-                        overflowY: 'auto'
+                        maxHeight: maxHeight
                     }}
                 >
                     {options.map(option => {
@@ -122,23 +84,11 @@ export function CustomSelect<T extends string | number>({
                                     onChange(option.value);
                                     setIsOpen(false);
                                 }}
-                                style={{
-                                    padding: '10px 12px',
-                                    textAlign: 'left',
-                                    background: isSelected ? '#f1f5f9' : 'transparent',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    fontSize: '0.9rem',
-                                    color: isSelected ? '#0f172a' : '#475569',
-                                    fontWeight: isSelected ? '600' : '500',
-                                    cursor: 'pointer',
-                                    transition: 'background-color 0.15s',
-                                    whiteSpace: 'normal',
-                                    wordWrap: 'break-word',
-                                    lineHeight: '1.4'
-                                }}
-                                onMouseOver={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#f8fafc'; }}
-                                onMouseOut={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                                className={`px-3 py-2.5 text-left border-none rounded-md text-[0.9rem] cursor-pointer transition-colors duration-150 normal-case break-words leading-tight ${
+                                    isSelected 
+                                        ? 'bg-slate-100 text-slate-900 font-semibold' 
+                                        : 'bg-transparent text-slate-600 font-medium hover:bg-slate-50'
+                                }`}
                             >
                                 {option.label}
                             </button>

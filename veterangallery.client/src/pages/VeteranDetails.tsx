@@ -4,7 +4,7 @@ import { ArrowLeft, Plane, Users, Anchor, Crosshair, HelpCircle, MoreVertical, E
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import AddVeteranForm from '../components/AddVeteranForm';
-import type { Veteran, Pilot, Infantryman } from '../types/veteran';
+import type { Veteran, Pilot, Infantryman, Navy } from '../types/veteran';
 
 const VeteranDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -66,11 +66,11 @@ const VeteranDetails = () => {
 
     const getBranchIcon = () => {
         switch (veteran.branch) {
-            case MilitaryBranch.LandForces: return <Users className="w-5 h-5" />;
-            case MilitaryBranch.AirForce: return <Plane className="w-5 h-5" />;
-            case MilitaryBranch.AirAssault: return <Crosshair className="w-5 h-5" />;
-            case MilitaryBranch.Navy: return <Anchor className="w-5 h-5" />;
-            default: return <HelpCircle className="w-5 h-5" />;
+            case MilitaryBranch.LandForces: return <Users size={20} />;
+            case MilitaryBranch.AirForce: return <Plane size={20} />;
+            case MilitaryBranch.AirAssault: return <Crosshair size={20} />;
+            case MilitaryBranch.Navy: return <Anchor size={20} />;
+            default: return <HelpCircle size={20} />;
         }
     };
 
@@ -88,19 +88,28 @@ const VeteranDetails = () => {
         if (veteran.$type === 'pilot') {
             const p = veteran as Pilot;
             return (
-                <div style={{ backgroundColor: '#eff6ff', padding: '1.25rem', borderRadius: '12px', marginTop: '1.5rem', borderLeft: '4px solid #3b82f6' }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#1e40af', fontSize: '0.9rem', textTransform: 'uppercase' }}>Aviation Record</h4>
-                    <p style={{ margin: '0.25rem 0' }}><strong>Aircraft:</strong> {p.vehicleModel}</p>
-                    <p style={{ margin: '0.25rem 0' }}><strong>Flight Hours:</strong> {p.experienceValue} hrs</p>
+                <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                    <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Aviation Record</h4>
+                    <p className="my-1"><strong>Aircraft:</strong> {p.vehicleModel}</p>
+                    <p className="my-1"><strong>Flight Hours:</strong> {p.experienceValue} hrs</p>
                 </div>
             );
         }
         if (veteran.$type === 'infantry') {
             const i = veteran as Infantryman;
             return (
-                <div style={{ backgroundColor: '#f0fdf4', padding: '1.25rem', borderRadius: '12px', marginTop: '1.5rem', borderLeft: '4px solid #22c55e' }}>
-                    <h4 style={{ margin: '0 0 0.5rem 0', color: '#166534', fontSize: '0.9rem', textTransform: 'uppercase' }}>Infantry/Naval Specialization</h4>
-                    <p style={{ margin: '0.25rem 0' }}><strong>Military Role:</strong> {i.specialization}</p>
+                <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                    <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Infantry/Naval Specialization</h4>
+                    <p className="my-1"><strong>Military Role:</strong> {i.specialization}</p>
+                </div>
+            );
+        }
+        if (veteran.$type === 'navy') {
+            const n = veteran as Navy;
+            return (
+                <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                    <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Naval Specialization</h4>
+                    <p className="my-1"><strong>Military Role:</strong> {n.specialization}</p>
                 </div>
             );
         }
@@ -109,49 +118,46 @@ const VeteranDetails = () => {
 
     return (
         <div
-            style={{ position: 'fixed', inset: 0, zIndex: 100, backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}
+            className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-8"
             onClick={handleClose}
         >
             <div
-                style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '850px', maxHeight: '90vh', display: 'flex', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', position: 'relative', animation: 'modalFadeIn 0.3s ease-out forwards' }}
+                className="bg-white rounded-3xl w-full max-w-[850px] max-h-[90vh] flex overflow-hidden shadow-2xl relative"
+                style={{ animation: 'modalFadeIn 0.3s ease-out forwards' }}
                 onClick={e => e.stopPropagation()}
             >
                 <button
                     onClick={handleClose}
-                    style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 10, background: 'rgba(255, 255, 255, 0.9)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', color: '#0f172a' }}
+                    className="absolute top-5 left-5 z-10 bg-white/90 border-none w-10 h-10 rounded-full flex items-center justify-center cursor-pointer shadow-sm text-slate-900 hover:bg-white transition-colors"
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft size={20} />
                 </button>
 
-                <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 20 }}>
+                <div className="absolute top-5 right-5 z-20">
                     <button
                         onClick={() => setShowMenu(!showMenu)}
-                        style={{ background: 'rgba(255, 255, 255, 0.9)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', color: '#0f172a' }}
+                        className="bg-white/90 border-none w-10 h-10 rounded-full flex items-center justify-center cursor-pointer shadow-sm text-slate-900 hover:bg-white transition-colors"
                     >
-                        <MoreVertical className="w-5 h-5" />
+                        <MoreVertical size={20} />
                     </button>
 
                     {showMenu && (
                         <>
-                            <div style={{ position: 'fixed', inset: 0, zIndex: 10 }} onClick={() => setShowMenu(false)} />
-                            <div style={{ position: 'absolute', top: '48px', right: 0, background: 'white', borderRadius: '12px', padding: '0.5rem', boxShadow: '0 10px 25px rgba(0,0,0,0.15)', border: '1px solid #e2e8f0', minWidth: '160px', zIndex: 20, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                            <div className="absolute top-12 right-0 bg-white rounded-xl p-2 shadow-lg border border-slate-200 min-w-[160px] z-20 flex flex-col gap-1">
                                 <button
                                     onClick={() => { setIsEditing(true); setShowMenu(false); }}
-                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', borderRadius: '8px', fontSize: '0.9rem', color: '#334155', fontWeight: '500' }}
-                                    onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
-                                    onMouseOut={e => e.currentTarget.style.background = 'none'}
+                                    className="flex items-center gap-2 px-3 py-2.5 border-none bg-transparent w-full text-left cursor-pointer rounded-lg text-[0.9rem] text-slate-700 font-medium hover:bg-slate-100 transition-colors"
                                 >
-                                    <Edit2 className="w-4 h-4" /> Edit Profile
+                                    <Edit2 size={16} /> Edit Profile
                                 </button>
 
                                 {isAdmin && (
                                     <button
                                         onClick={handleDelete}
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', borderRadius: '8px', fontSize: '0.9rem', color: '#dc2626', fontWeight: '600' }}
-                                        onMouseOver={e => e.currentTarget.style.background = '#fee2e2'}
-                                        onMouseOut={e => e.currentTarget.style.background = 'none'}
+                                        className="flex items-center gap-2 px-3 py-2.5 border-none bg-transparent w-full text-left cursor-pointer rounded-lg text-[0.9rem] text-red-600 font-semibold hover:bg-red-50 transition-colors"
                                     >
-                                        <Trash2 className="w-4 h-4" /> Delete Profile
+                                        <Trash2 size={16} /> Delete Profile
                                     </button>
                                 )}
                             </div>
@@ -159,16 +165,16 @@ const VeteranDetails = () => {
                     )}
                 </div>
 
-                <div style={{ width: '42%', flexShrink: 0, backgroundColor: '#1e293b', borderTopLeftRadius: '24px', borderBottomLeftRadius: '24px', overflow: 'hidden' }}>
+                <div className="w-[42%] shrink-0 bg-slate-800 rounded-l-3xl overflow-hidden">
                     <img
                         src={veteran.photoUrl || '/default-hero.png'}
                         alt={veteran.fullName}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        className="w-full h-full object-cover"
                         onError={(e) => { e.currentTarget.src = '/default-hero.png'; }}
                     />
                 </div>
 
-                <div className="custom-scroll" style={{ flex: '1', padding: '3rem 2.5rem', overflowY: 'auto' }}>
+                <div className="custom-scroll flex-1 p-12 pr-10 overflow-y-auto">
                     {isEditing ? (
                         <AddVeteranForm
                             veteranToEdit={veteran}
@@ -177,22 +183,22 @@ const VeteranDetails = () => {
                         />
                     ) : (
                         <>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '6px 14px', borderRadius: '20px', color: '#475569', fontWeight: '600', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                            <div className="inline-flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-full text-slate-600 font-semibold text-[0.85rem] mb-4">
                                 {getBranchIcon()}
                                 {getBranchName()}
                             </div>
 
-                            <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2.5rem', color: '#0f172a', lineHeight: '1.1' }}>{veteran.fullName}</h2>
-                            <p style={{ margin: '0 0 2rem 0', color: '#64748b', fontSize: '1.1rem', fontWeight: '500' }}>
+                            <h2 className="m-0 mb-2 text-[2.5rem] text-slate-900 font-extrabold leading-none">{veteran.fullName}</h2>
+                            <p className="m-0 mb-8 text-slate-500 text-[1.1rem] font-medium">
                                 {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                             </p>
 
-                                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
-                                    <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '1rem', fontWeight: '700' }}>Combat Story & Legacy</h3>
-                                    <p style={{ color: '#334155', lineHeight: '1.8', whiteSpace: 'pre-line', fontSize: '1rem', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                                        {veteran.story}
-                                    </p>
-                                </div>
+                            <div className="border-t border-slate-200 pt-6">
+                                <h3 className="text-[0.9rem] uppercase tracking-[0.5px] text-slate-400 mb-4 font-bold">Combat Story & Legacy</h3>
+                                <p className="text-slate-700 leading-relaxed whitespace-pre-line text-[1rem] break-all overflow-wrap-anywhere">
+                                    {veteran.story}
+                                </p>
+                            </div>
 
                             {renderSpecializedDetails()}
                         </>

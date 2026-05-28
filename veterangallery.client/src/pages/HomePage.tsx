@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PlusCircle, SearchX, Activity, CheckCircle, XCircle, Eye, X } from 'lucide-react';
+import { PlusCircle, SearchX, Activity, CheckCircle, XCircle, Eye, X, RefreshCw, Archive } from 'lucide-react';
 import Header from '../components/Header';
 import VeteranCard from '../components/VeteranCard';
-import { getVeterans, getProposals, approveProposal, rejectProposal, getComparison } from '../api/apiClient';
+import { getVeterans, getProposals, approveProposal, rejectProposal, getComparison, restoreProposal } from '../api/apiClient';
 import type { Veteran } from '../types/veteran';
 import { getRankDisplayName } from '../types/veteran';
 
@@ -15,8 +15,9 @@ const HomePage = () => {
     const [sortBy, setSortBy] = useState('');
     const [loading, setLoading] = useState(true);
     const [statusMessage, setStatusMessage] = useState('System Online');
+
     const isAdmin = !!localStorage.getItem('adminToken');
-    const [activeTab, setActiveTab] = useState<'gallery' | 'pending'>('gallery');
+    const [activeTab, setActiveTab] = useState<'gallery' | 'pending' | 'rejected'>('gallery');
     const [proposals, setProposals] = useState<any[]>([]);
     const [proposalsLoading, setProposalsLoading] = useState(false);
     const [viewingProposal, setViewingProposal] = useState<any>(null);
@@ -32,7 +33,6 @@ const HomePage = () => {
                     setGridKey(prev => prev + 1);
                     setStatusMessage('Data synchronized');
                 } catch (error) {
-                    console.error("Loading error:", error);
                     setStatusMessage('Error: Cannot connect to server');
                 } finally {
                     setLoading(false);
@@ -44,15 +44,15 @@ const HomePage = () => {
     }, [activeBranch, searchQuery, sortBy, activeTab]);
 
     useEffect(() => {
-        if (isAdmin && activeTab === 'pending') {
-            fetchProposalsData();
+        if (isAdmin && (activeTab === 'pending' || activeTab === 'rejected')) {
+            fetchProposalsData(activeTab === 'pending' ? 1 : 3);
         }
     }, [isAdmin, activeTab]);
 
-    const fetchProposalsData = async () => {
+    const fetchProposalsData = async (status: number) => {
         setProposalsLoading(true);
         try {
-            const data = await getProposals(1);
+            const data = await getProposals(status);
             setProposals(data);
         } catch (err) {
             console.error(err);
@@ -65,18 +65,25 @@ const HomePage = () => {
         if (!window.confirm("Publish this to public gallery?")) return;
         await approveProposal(id);
         setViewingProposal(null);
-        fetchProposalsData();
+        fetchProposalsData(1);
     };
 
     const handleReject = async (id: string) => {
-        if (!window.confirm("Reject this proposal?")) return;
+        if (!window.confirm("Move this proposal to the Rejected archive?")) return;
         await rejectProposal(id);
         setViewingProposal(null);
-        fetchProposalsData();
+        fetchProposalsData(1);
+    };
+
+    const handleRestore = async (id: string) => {
+        if (!window.confirm("Restore this proposal to the Pending Queue?")) return;
+        await restoreProposal(id);
+        setViewingProposal(null);
+        fetchProposalsData(3);
     };
 
     const handleViewComparison = async (p: any) => {
-        if (p.type === 2) { 
+        if (p.type === 2) {
             const compData = await getComparison(p.id);
             setViewingProposal({ ...p, current: compData.current });
         } else {
@@ -84,45 +91,50 @@ const HomePage = () => {
         }
     };
 
-    const getFieldStyle = (propVal: any, currVal: any, baseStyle: React.CSSProperties = {}) => {
+    const getFieldClassName = (propVal: any, currVal: any, baseClass: string = '') => {
         if (currVal !== undefined && propVal !== currVal) {
-            return { ...baseStyle, backgroundColor: '#fef08a', padding: '2px 4px', borderRadius: '4px' };
+            return `${baseClass} bg-yellow-100 px-1 py-0.5 rounded`;
         }
-        return baseStyle;
+        return baseClass;
     };
 
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f8fafc', backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '24px 24px', paddingBottom: '40px' }}>
+        <div className="min-h-screen flex flex-col bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pb-10">
             <Header onFilterChange={setActiveBranch} onSearchChange={setSearchQuery} onSortChange={setSortBy} />
 
-            <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '2rem' }}>
+            <main className="flex-1 max-w-[1200px] w-full mx-auto p-8">
+
                 {isAdmin && (
-                    <div style={{ display: 'flex', gap: '1.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '2rem' }}>
-                        <button onClick={() => setActiveTab('gallery')} style={{ background: 'none', border: 'none', padding: '0 0 10px 0', fontSize: '1.1rem', fontWeight: '800', cursor: 'pointer', color: activeTab === 'gallery' ? '#0f172a' : '#94a3b8', borderBottom: activeTab === 'gallery' ? '3px solid #3b82f6' : '3px solid transparent' }}>
+                    <div className="flex gap-8 border-b-2 border-slate-200 mb-8">
+                        <button onClick={() => setActiveTab('gallery')} className={`bg-transparent border-none pb-2.5 text-[1.1rem] font-extrabold cursor-pointer border-b-3 ${activeTab === 'gallery' ? 'text-slate-900 border-blue-500' : 'text-slate-400 border-transparent'}`}>
                             Public Gallery
                         </button>
-                        <button onClick={() => setActiveTab('pending')} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', padding: '0 0 10px 0', fontSize: '1.1rem', fontWeight: '800', cursor: 'pointer', color: activeTab === 'pending' ? '#d97706' : '#94a3b8', borderBottom: activeTab === 'pending' ? '3px solid #d97706' : '3px solid transparent' }}>
-                            Moderation Queue
-                            <span style={{ background: activeTab === 'pending' ? '#fef3c7' : '#f1f5f9', color: activeTab === 'pending' ? '#b45309' : '#64748b', padding: '2px 8px', borderRadius: '12px', fontSize: '0.8rem' }}>{proposals.length}</span>
+                        <button onClick={() => setActiveTab('pending')} className={`flex items-center gap-2 bg-transparent border-none pb-2.5 text-[1.1rem] font-extrabold cursor-pointer border-b-3 ${activeTab === 'pending' ? 'text-amber-600 border-amber-600' : 'text-slate-400 border-transparent'}`}>
+                            Pending
+                            {activeTab === 'pending' && <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-[0.8rem]">{proposals.length}</span>}
+                        </button>
+                        <button onClick={() => setActiveTab('rejected')} className={`flex items-center gap-2 bg-transparent border-none pb-2.5 text-[1.1rem] font-extrabold cursor-pointer border-b-3 ${activeTab === 'rejected' ? 'text-red-600 border-red-600' : 'text-slate-400 border-transparent'}`}>
+                            Rejected
                         </button>
                     </div>
                 )}
+
                 <div style={{ display: activeTab === 'gallery' ? 'block' : 'none' }}>
-                    <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
-                        <Link to="/add-veteran" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#0f172a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '9999px', textDecoration: 'none', fontWeight: '600', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                            <PlusCircle className="w-5 h-5" /> Add New Profile
+                    <div className="mb-8 flex justify-end">
+                        <Link to="/add-veteran" className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-full no-underline font-semibold transition-all duration-200 shadow-md hover:bg-slate-800">
+                            <PlusCircle size={20} /> Add New Profile
                         </Link>
                     </div>
 
                     {loading && veterans.length === 0 ? (
-                        <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b', fontWeight: '600' }}>Loading heroes...</div>
+                        <div className="text-center mt-16 text-slate-500 font-semibold">Loading heroes...</div>
                     ) : veterans.length === 0 ? (
-                        <div style={{ textAlign: 'center', marginTop: '4rem', color: '#64748b' }}>
-                            <SearchX className="w-16 h-16" style={{ margin: '0 auto 1rem auto', opacity: 0.5 }} />
+                        <div className="text-center mt-16 text-slate-500">
+                            <SearchX size={64} className="mx-auto mb-4 opacity-50" />
                             <h3>No records found</h3>
                         </div>
                     ) : (
-                        <div key={gridKey} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '2rem', opacity: loading ? 0.4 : 1, transition: 'opacity 0.2s ease-in-out' }}>
+                        <div key={gridKey} className={`grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-8 transition-opacity duration-200 ease-in-out ${loading ? 'opacity-40' : 'opacity-100'}`}>
                             {veterans.map((v, index) => (
                                 <div key={v.id} style={{ animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`, animationDelay: `${index * 0.05}s`, opacity: 0 }}>
                                     <VeteranCard veteran={v} />
@@ -131,39 +143,49 @@ const HomePage = () => {
                         </div>
                     )}
                 </div>
-                <div style={{ display: activeTab === 'pending' ? 'block' : 'none' }}>
+
+                <div style={{ display: (activeTab === 'pending' || activeTab === 'rejected') ? 'block' : 'none' }}>
                     {proposalsLoading ? (
-                        <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading queue...</div>
+                        <div className="text-center p-12 text-slate-500">Loading queue...</div>
                     ) : proposals.length === 0 ? (
-                        <div style={{ textAlign: 'center', background: 'white', padding: '4rem', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>
-                            <CheckCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                            <h3 style={{ color: '#475569', margin: 0 }}>Queue is empty</h3>
-                            <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>All profiles are up to date.</p>
+                        <div className="text-center bg-white p-16 rounded-2xl border border-dashed border-slate-300">
+                            {activeTab === 'pending' ? <CheckCircle size={48} color="#cbd5e1" className="block mx-auto mb-4" /> : <Archive size={48} color="#cbd5e1" className="block mx-auto mb-4" />}
+                            <h3 className="text-slate-600 m-0">Queue is empty</h3>
+                            <p className="text-slate-400 text-[0.9rem]">{activeTab === 'pending' ? 'All profiles are up to date.' : 'No rejected proposals.'}</p>
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        <div className="flex flex-col gap-6">
                             {proposals.map(p => (
-                                <div key={p.id} style={{ background: 'white', borderRadius: '16px', padding: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
-                                    <div style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#1e293b', flexShrink: 0 }}>
-                                        <img src={p.proposedData.photoUrl || '/default-hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.currentTarget.src = '/default-hero.png'} />
+                                <div key={p.id} className="bg-white rounded-2xl p-6 shadow-sm flex gap-6 items-start">
+                                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-800 shrink-0">
+                                        <img src={p.proposedData.photoUrl || '/default-hero.png'} alt="Hero" className="w-full h-full object-cover" onError={e => e.currentTarget.src = '/default-hero.png'} />
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <span style={{ fontSize: '0.7rem', fontWeight: '800', textTransform: 'uppercase', padding: '4px 8px', borderRadius: '4px', backgroundColor: p.type === 1 ? '#dcfce7' : '#e0e7ff', color: p.type === 1 ? '#166534' : '#3730a3', display: 'inline-block', marginBottom: '8px' }}>
+                                    <div className="flex-1">
+                                        <span className={`text-[0.7rem] font-extrabold uppercase px-2 py-1 rounded inline-block mb-2 ${p.type === 1 ? 'bg-green-100 text-green-800' : 'bg-indigo-100 text-indigo-800'}`}>
                                             {p.type === 1 ? 'New Profile' : 'Profile Edit'}
                                         </span>
-                                        <h3 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', color: '#0f172a' }}>{p.proposedData.fullName}</h3>
-                                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>{getRankDisplayName(p.proposedData.rank, p.proposedData.branch)} • {p.proposedData.unitName}</p>
+                                        <h3 className="m-0 mb-1 text-[1.2rem] text-slate-900 font-bold">{p.proposedData.fullName}</h3>
+                                        <p className="m-0 text-slate-500 text-[0.9rem]">{getRankDisplayName(p.proposedData.rank, p.proposedData.branch)} • {p.proposedData.unitName}</p>
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-                                        <button onClick={() => handleViewComparison(p)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#f1f5f9', color: '#334155', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>
-                                            <Eye className="w-4 h-4" /> View / Compare
+                                    <div className="flex flex-col gap-2 shrink-0">
+                                        <button onClick={() => handleViewComparison(p)} className="flex items-center gap-1.5 px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 border-none rounded-lg font-semibold cursor-pointer transition-colors">
+                                            <Eye size={16} /> View / Compare
                                         </button>
-                                        <button onClick={() => handleApprove(p.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#22c55e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>
-                                            <CheckCircle className="w-4 h-4" /> Approve
-                                        </button>
-                                        <button onClick={() => handleReject(p.id)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>
-                                            <XCircle className="w-4 h-4" /> Reject
-                                        </button>
+
+                                        {activeTab === 'pending' ? (
+                                            <>
+                                                <button onClick={() => handleApprove(p.id)} className="flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white hover:bg-green-600 border-none rounded-lg font-semibold cursor-pointer transition-colors">
+                                                    <CheckCircle size={16} /> Approve
+                                                </button>
+                                                <button onClick={() => handleReject(p.id)} className="flex items-center gap-1.5 px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 border-none rounded-lg font-semibold cursor-pointer transition-colors">
+                                                    <XCircle size={16} /> Reject
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button onClick={() => handleRestore(p.id)} className="flex items-center gap-1.5 px-4 py-2 bg-indigo-100 text-indigo-600 hover:bg-indigo-200 border-none rounded-lg font-semibold cursor-pointer transition-colors">
+                                                <RefreshCw size={16} /> Restore
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -172,75 +194,77 @@ const HomePage = () => {
                 </div>
             </main>
 
-            <footer style={{ position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#0f172a', color: '#cbd5e1', padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', zIndex: 100, boxShadow: '0 -4px 6px rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Activity className="w-4 h-4" style={{ color: '#22c55e' }} />
-                    <span style={{ fontWeight: '500', color: 'white' }}>Status:</span> {statusMessage}
+            <footer className="fixed bottom-0 inset-x-0 bg-slate-900 text-slate-300 px-6 py-2 flex justify-between items-center text-[0.8rem] z-[100] shadow-[0_-4px_6px_rgba(0,0,0,0.1)]">
+                <div className="flex items-center gap-2">
+                    <Activity size={16} style={{ color: '#22c55e' }} />
+                    <span className="font-medium text-white">Status:</span> {statusMessage}
                 </div>
-                <div style={{ display: 'flex', gap: '1.5rem', fontWeight: '500' }}>
-                    <span>Total Profiles: <strong style={{ color: 'white' }}>{veterans.length}</strong></span>
-                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Infantry: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
-                    <span style={{ borderLeft: '1px solid #334155', paddingLeft: '1.5rem' }}>Aviation: <strong style={{ color: 'white' }}>{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
+                <div className="flex gap-6 font-medium">
+                    <span>Total Profiles: <strong className="text-white">{veterans.length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Infantry: <strong className="text-white">{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Aviation: <strong className="text-white">{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.$type === 'navy').length}</strong></span>
                 </div>
             </footer>
-            {viewingProposal && (
-                <div style={{ position: 'fixed', inset: 0, zIndex: 1000, backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }} onClick={() => setViewingProposal(null)}>
-                    <div style={{ background: 'white', borderRadius: '24px', width: '100%', maxWidth: '1050px', maxHeight: '90vh', display: 'flex', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', position: 'relative' }} onClick={e => e.stopPropagation()}>
 
-                        <button onClick={() => setViewingProposal(null)} style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10, background: 'rgba(255, 255, 255, 0.9)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', color: '#0f172a' }}>
-                            <X className="w-5 h-5" />
+            {viewingProposal && (
+                <div className="fixed inset-0 z-[1000] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-8" onClick={() => setViewingProposal(null)}>
+                    <div className="bg-white rounded-3xl w-full max-w-[1050px] max-h-[90vh] flex overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+
+                        <button onClick={() => setViewingProposal(null)} className="absolute top-5 right-5 z-10 bg-white/90 border-none w-10 h-10 rounded-full flex items-center justify-center cursor-pointer shadow-sm text-slate-900 hover:bg-white transition-colors">
+                            <X size={20} />
                         </button>
 
-                        <div style={{ width: '38%', flexShrink: 0, backgroundColor: '#1e293b' }}>
-                            <img src={viewingProposal.proposedData.photoUrl || '/default-hero.png'} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.currentTarget.src = '/default-hero.png'; }} />
+                        <div className="w-[38%] shrink-0 bg-slate-800">
+                            <img src={viewingProposal.proposedData.photoUrl || '/default-hero.png'} alt="Hero" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/default-hero.png'; }} />
                         </div>
 
-                        <div className="custom-scroll" style={{ flex: '1', padding: '3rem 2.5rem', overflowY: 'auto' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: viewingProposal.type === 1 ? '#dcfce7' : '#fef08a', padding: '6px 14px', borderRadius: '20px', color: viewingProposal.type === 1 ? '#166534' : '#854d0e', fontWeight: '600', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+                        <div className="custom-scroll flex-1 p-12 pr-10 overflow-y-auto">
+                            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold text-[0.85rem] mb-6 ${viewingProposal.type === 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                 {viewingProposal.type === 1 ? 'New Profile Preview' : 'Proposed Edits Comparison'}
                             </div>
 
                             {viewingProposal.type === 1 || !viewingProposal.current ? (
                                 <>
-                                    <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '2.5rem', color: '#0f172a', lineHeight: '1.1' }}>{viewingProposal.proposedData.fullName}</h2>
-                                    <p style={{ margin: '0 0 2rem 0', color: '#64748b', fontSize: '1.1rem', fontWeight: '500' }}>
+                                    <h2 className="m-0 mb-2 text-[2.5rem] text-slate-900 font-extrabold leading-none">{viewingProposal.proposedData.fullName}</h2>
+                                    <p className="m-0 mb-8 text-slate-500 text-[1.1rem] font-medium">
                                         {getRankDisplayName(viewingProposal.proposedData.rank, viewingProposal.proposedData.branch)} • {viewingProposal.proposedData.unitName}
                                     </p>
-                                    <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
-                                        <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '1rem', fontWeight: '700' }}>Combat Story & Legacy</h3>
-                                        <p style={{ color: '#334155', lineHeight: '1.8', whiteSpace: 'pre-line', fontSize: '1rem', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                                    <div className="border-t border-slate-200 pt-6">
+                                        <h3 className="text-[0.9rem] uppercase tracking-[0.5px] text-slate-400 mb-4 font-bold">Combat Story & Legacy</h3>
+                                        <p className="text-slate-700 leading-relaxed whitespace-pre-line text-[1rem] break-all overflow-wrap-anywhere">
                                             {viewingProposal.proposedData.story}
                                         </p>
                                     </div>
                                 </>
                             ) : (
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                                    <div style={{ borderRight: '1px solid #e2e8f0', paddingRight: '1.5rem' }}>
-                                        <h4 style={{ color: '#94a3b8', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px', marginBottom: '1rem' }}>Current Database State</h4>
-                                        <h2 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#64748b' }}>{viewingProposal.current.fullName}</h2>
-                                        <p style={{ margin: '0 0 1rem 0', color: '#94a3b8', fontSize: '0.9rem', fontWeight: '500' }}>
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="border-r border-slate-200 pr-6">
+                                        <h4 className="text-slate-400 uppercase text-[0.75rem] tracking-[0.5px] mb-4">Current Database State</h4>
+                                        <h2 className="m-0 mb-2 text-[1.5rem] text-slate-500 font-bold">{viewingProposal.current.fullName}</h2>
+                                        <p className="m-0 mb-4 text-slate-400 text-[0.9rem] font-medium">
                                             {getRankDisplayName(viewingProposal.current.rank, viewingProposal.current.branch)} • {viewingProposal.current.unitName}
                                         </p>
-                                        <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '1rem' }}>
-                                            <p style={{ color: '#64748b', lineHeight: '1.6', whiteSpace: 'pre-line', fontSize: '0.9rem', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                                        <div className="border-t border-dashed border-slate-200 pt-4">
+                                            <p className="text-slate-500 leading-normal whitespace-pre-line text-[0.9rem] break-all overflow-wrap-anywhere">
                                                 {viewingProposal.current.story}
                                             </p>
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 style={{ color: '#ca8a04', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px', marginBottom: '1rem' }}>Proposed Changes</h4>
-                                        <h2 style={getFieldStyle(viewingProposal.proposedData.fullName, viewingProposal.current.fullName, { margin: '0 0 0.5rem 0', fontSize: '1.5rem', color: '#0f172a' })}>
+                                        <h4 className="text-yellow-600 uppercase text-[0.75rem] tracking-[0.5px] mb-4">Proposed Changes</h4>
+                                        <h2 className={getFieldClassName(viewingProposal.proposedData.fullName, viewingProposal.current.fullName, 'm-0 mb-2 text-[1.5rem] text-slate-900 font-bold')}>
                                             {viewingProposal.proposedData.fullName}
                                         </h2>
-                                        <p style={getFieldStyle(
+                                        <p className={getFieldClassName(
                                             `${viewingProposal.proposedData.rank}-${viewingProposal.proposedData.unitName}`,
                                             `${viewingProposal.current.rank}-${viewingProposal.current.unitName}`,
-                                            { margin: '0 0 1rem 0', color: '#0f172a', fontSize: '0.9rem', fontWeight: '600' }
+                                            'm-0 mb-4 text-slate-900 text-[0.9rem] font-semibold'
                                         )}>
                                             {getRankDisplayName(viewingProposal.proposedData.rank, viewingProposal.proposedData.branch)} • {viewingProposal.proposedData.unitName}
                                         </p>
-                                        <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '1rem' }}>
-                                            <p style={getFieldStyle(viewingProposal.proposedData.story, viewingProposal.current.story, { color: '#0f172a', lineHeight: '1.6', whiteSpace: 'pre-line', fontSize: '0.9rem', wordBreak: 'break-word', overflowWrap: 'break-word' })}>
+                                        <div className="border-t border-dashed border-slate-200 pt-4">
+                                            <p className={getFieldClassName(viewingProposal.proposedData.story, viewingProposal.current.story, 'text-slate-900 leading-normal whitespace-pre-line text-[0.9rem] break-all overflow-wrap-anywhere')}>
                                                 {viewingProposal.proposedData.story}
                                             </p>
                                         </div>
@@ -248,13 +272,21 @@ const HomePage = () => {
                                 </div>
                             )}
 
-                            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
-                                <button onClick={() => handleApprove(viewingProposal.id)} style={{ padding: '12px 24px', background: '#22c55e', color: 'white', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <CheckCircle className="w-5 h-5" /> Approve & Publish
-                                </button>
-                                <button onClick={() => handleReject(viewingProposal.id)} style={{ padding: '12px 24px', background: '#fee2e2', color: '#dc2626', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <XCircle className="w-5 h-5" /> Reject Proposal
-                                </button>
+                            <div className="flex gap-4 mt-8 border-t border-slate-200 pt-6">
+                                {activeTab === 'pending' ? (
+                                    <>
+                                        <button onClick={() => handleApprove(viewingProposal.id)} className="px-6 py-3 bg-green-500 text-white rounded-lg border-none cursor-pointer font-semibold flex items-center gap-2 hover:bg-green-600 transition-colors">
+                                            <CheckCircle size={20} /> Approve & Publish
+                                        </button>
+                                        <button onClick={() => handleReject(viewingProposal.id)} className="px-6 py-3 bg-red-100 text-red-600 rounded-lg border-none cursor-pointer font-semibold flex items-center gap-2 hover:bg-red-200 transition-colors">
+                                            <XCircle size={20} /> Reject Proposal
+                                        </button>
+                                    </>
+                                ) : (
+                                        <button onClick={() => handleRestore(viewingProposal.id)} className="px-6 py-3 bg-indigo-100 text-indigo-600 rounded-lg border-none cursor-pointer font-semibold flex items-center gap-2 hover:bg-indigo-200 transition-colors">
+                                            <RefreshCw size={20} /> Restore to Pending
+                                        </button>
+                                )}
                             </div>
                         </div>
                     </div>
