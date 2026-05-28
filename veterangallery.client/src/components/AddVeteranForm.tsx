@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { apiClient, updateVeteran } from '../api/apiClient';
+import { submitProposal, addVeteranDirect, updateVeteran } from '../api/apiClient';
 import { MilitaryBranch, MilitaryRank, getRankDisplayName } from '../types/veteran';
-import { CustomSelect } from './CustomSelect'; // Підключаємо наш новий архітектурний компонент
+import { CustomSelect } from './CustomSelect';
 
 interface Props {
     onSuccess: () => void;
@@ -11,6 +11,7 @@ interface Props {
 
 const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     const isEditMode = !!veteranToEdit;
+    const isAdmin = !!localStorage.getItem('adminToken');
 
     const [fullName, setFullName] = useState(veteranToEdit?.fullName || '');
     const [rank, setRank] = useState<MilitaryRank>(veteranToEdit?.rank ?? MilitaryRank.SoldierOrSailor);
@@ -29,11 +30,8 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
             return fullName || rank !== MilitaryRank.SoldierOrSailor || unitName || story || photoUrl || specialization || vehicleModel || experience > 0;
         }
         const basicChanged = fullName !== veteranToEdit.fullName ||
-            rank !== veteranToEdit.rank ||
-            unitName !== veteranToEdit.unitName ||
-            story !== veteranToEdit.story ||
-            branch !== veteranToEdit.branch ||
-            photoUrl !== veteranToEdit.photoUrl;
+            rank !== veteranToEdit.rank || unitName !== veteranToEdit.unitName ||
+            story !== veteranToEdit.story || branch !== veteranToEdit.branch || photoUrl !== veteranToEdit.photoUrl;
 
         if (basicChanged) return true;
 
@@ -68,17 +66,26 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
         }
 
         try {
-            if (isEditMode) {
-                await updateVeteran(veteranToEdit.id, payload);
-                alert('Hero profile successfully updated!');
+            if (isAdmin) {
+                // Адмін напряму пише в базу
+                if (isEditMode) {
+                    await updateVeteran(payload.id, payload);
+                } else {
+                    await addVeteranDirect(payload);
+                }
+                alert(isEditMode ? 'Profile updated instantly!' : 'Profile published instantly!');
             } else {
-                await apiClient.post('/veterans', payload);
-                alert('Hero profile successfully created!');
+                // Користувач відправляє на розгляд
+                await submitProposal(payload, isEditMode);
+                alert(isEditMode
+                    ? 'Thank you! Your proposed edits have been submitted for moderation.'
+                    : 'Thank you! The hero profile has been submitted for moderation.'
+                );
             }
             onSuccess();
         } catch (error) {
-            console.error('Error saving veteran:', error);
-            alert('Failed to save the profile.');
+            console.error('Error saving:', error);
+            alert('Failed to process the request.');
         } finally {
             setIsSubmitting(false);
         }
@@ -110,7 +117,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                         {isEditMode ? 'Edit Hero Profile' : 'Create Hero Profile'}
                     </h2>
                     <p style={{ margin: 0, fontSize: '0.9rem', color: '#64748b' }}>
-                        {isEditMode ? 'Modify the existing metrics and narrative for this record.' : 'Fill out the form below to add a new veteran record.'}
+                        {isAdmin ? 'You are in Admin mode. Changes will be saved instantly.' : 'Fill out the form below. It will be reviewed by a moderator.'}
                     </p>
                 </div>
             </div>
@@ -129,11 +136,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Rank</label>
-                            <CustomSelect
-                                value={rank}
-                                onChange={(val) => setRank(val)}
-                                options={rankOptions}
-                            />
+                            <CustomSelect value={rank} onChange={(val) => setRank(val)} options={rankOptions} />
                         </div>
                         <div>
                             <label style={labelStyle}>Military Unit</label>
@@ -147,12 +150,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
                         <div>
                             <label style={labelStyle}>Military Branch</label>
-                            <CustomSelect
-                                value={branch}
-                                onChange={(val) => setBranch(val)}
-                                options={branchOptions}
-                                disabled={isEditMode}
-                            />
+                            <CustomSelect value={branch} onChange={(val) => setBranch(val)} options={branchOptions} disabled={isEditMode} />
                         </div>
                         <div>
                             <label style={labelStyle}>Image URL</label>
@@ -197,7 +195,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                         </button>
                     )}
                     <button type="submit" disabled={isSubmitting} style={{ flex: 2, backgroundColor: '#0f172a', color: 'white', padding: '12px', border: 'none', borderRadius: '8px', fontSize: '0.95rem', fontWeight: '600', cursor: 'pointer' }}>
-                        {isSubmitting ? 'Saving...' : isEditMode ? 'Save Changes' : 'Publish Record'}
+                        {isSubmitting ? 'Processing...' : (isAdmin ? (isEditMode ? 'Update Instantly' : 'Publish Instantly') : 'Submit for Review')}
                     </button>
                 </div>
             </form>

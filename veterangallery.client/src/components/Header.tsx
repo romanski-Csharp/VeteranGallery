@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Search, Info } from 'lucide-react';
+import { Search, Info, ShieldAlert, LogOut } from 'lucide-react';
 import { MilitaryBranch } from '../types/veteran';
 import { CustomSelect } from './CustomSelect';
 import AboutModal from './AboutModal';
+import { LoginModal } from './LoginModal';
+import { logoutAdmin } from '../api/apiClient';
 
 interface Props {
     onFilterChange: (branch: number | null) => void;
@@ -14,6 +16,9 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
     const [activeFilter, setActiveFilter] = useState<number | null>(null);
     const [currentSort, setCurrentSort] = useState<string>('');
     const [isAboutOpen, setIsAboutOpen] = useState(false);
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+    const isAdmin = !!localStorage.getItem('adminToken');
 
     const sortOptions = [
         { label: 'Sort: Newest First', value: '' },
@@ -30,6 +35,11 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
     const handleSortChange = (value: string) => {
         setCurrentSort(value);
         onSortChange(value);
+    };
+
+    const handleLogout = () => {
+        logoutAdmin();
+        window.location.reload();
     };
 
     const FilterButton = ({ label, value }: { label: string, value: number | null }) => {
@@ -71,27 +81,29 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                         </h1>
                     </div>
 
-                    <button
-                        onClick={() => setIsAboutOpen(true)}
-                        style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            background: '#f1f5f9',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '20px',
-                            fontSize: '0.8rem',
-                            fontWeight: '600',
-                            color: '#475569',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
-                        onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
-                    >
-                        <Info className="w-3.5 h-3.5" /> About App
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #e2e8f0', paddingLeft: '1rem' }}>
+                        <button
+                            onClick={() => setIsAboutOpen(true)}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#f1f5f9', border: 'none', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: '600', color: '#475569', cursor: 'pointer', transition: 'all 0.2s' }}
+                            onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+                            onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
+                        >
+                            <Info className="w-3.5 h-3.5" /> About App
+                        </button>
+
+                        {isAdmin ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fee2e2', padding: '4px 12px', borderRadius: '20px', border: '1px solid #fca5a5' }}>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#b91c1c' }}>ADMIN</span>
+                                <button onClick={handleLogout} style={{ background: 'none', border: 'none', padding: 0, color: '#b91c1c', cursor: 'pointer' }} title="Exit Admin Mode">
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <button onClick={() => setIsLoginOpen(true)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '6px' }} title="Commander Login">
+                                <ShieldAlert className="w-4 h-4 hover:text-slate-800 transition-colors" />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div style={{ flex: 1, maxWidth: '600px', display: 'flex', gap: '1rem', position: 'relative', zIndex: 60 }}>
@@ -129,6 +141,7 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
             </header>
 
             <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+            {isLoginOpen && <LoginModal onClose={() => setIsLoginOpen(false)} />}
         </>
     );
 };

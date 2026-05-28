@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using VeteranGallery.Domain.Entities;
 using VeteranGallery.Domain.Interfaces;
 
@@ -34,6 +35,7 @@ public class VeteransController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Create([FromBody] Veteran veteran)
     {
         await _repository.AddAsync(veteran);
@@ -41,6 +43,7 @@ public class VeteransController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var existing = await _repository.GetByIdAsync(id);
@@ -51,6 +54,7 @@ public class VeteransController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Update(Guid id, [FromBody] Veteran veteran)
     {
         if (id != veteran.Id) return BadRequest("ID mismatch");

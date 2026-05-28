@@ -1,4 +1,7 @@
+using System.Text;
 using System.Text.Json.Serialization.Metadata;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using VeteranGallery.API.Data;
 using VeteranGallery.Domain.Interfaces;
@@ -18,6 +21,31 @@ builder.Services.AddControllers()
 
 builder.Services.AddOpenApi();
 
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? throw new InvalidOperationException("Критична помилка: Безпечний JWT_KEY не знайдено в .env");
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -30,6 +58,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddScoped<IVeteranRepository, MongoVeteranRepository>();
+builder.Services.AddScoped<IProposalRepository, MongoProposalRepository>();
 
 var app = builder.Build();
 
@@ -40,6 +69,9 @@ app.UseRouting();
 
 app.UseCors("AllowReactApp");
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -47,8 +79,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

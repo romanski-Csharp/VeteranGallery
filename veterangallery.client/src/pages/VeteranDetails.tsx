@@ -62,6 +62,8 @@ const VeteranDetails = () => {
 
     if (loading || !veteran) return null;
 
+    const isAdmin = !!localStorage.getItem('adminToken');
+
     const getBranchIcon = () => {
         switch (veteran.branch) {
             case MilitaryBranch.LandForces: return <Users className="w-5 h-5" />;
@@ -141,14 +143,17 @@ const VeteranDetails = () => {
                                 >
                                     <Edit2 className="w-4 h-4" /> Edit Profile
                                 </button>
-                                <button
-                                    onClick={handleDelete}
-                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', borderRadius: '8px', fontSize: '0.9rem', color: '#dc2626', fontWeight: '600' }}
-                                    onMouseOver={e => e.currentTarget.style.background = '#fee2e2'}
-                                    onMouseOut={e => e.currentTarget.style.background = 'none'}
-                                >
-                                    <Trash2 className="w-4 h-4" /> Delete Profile
-                                </button>
+
+                                {isAdmin && (
+                                    <button
+                                        onClick={handleDelete}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', border: 'none', background: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', borderRadius: '8px', fontSize: '0.9rem', color: '#dc2626', fontWeight: '600' }}
+                                        onMouseOver={e => e.currentTarget.style.background = '#fee2e2'}
+                                        onMouseOut={e => e.currentTarget.style.background = 'none'}
+                                    >
+                                        <Trash2 className="w-4 h-4" /> Delete Profile
+                                    </button>
+                                )}
                             </div>
                         </>
                     )}
@@ -182,10 +187,12 @@ const VeteranDetails = () => {
                                 {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                             </p>
 
-                            <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
-                                <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '1rem', fontWeight: '700' }}>Combat Story & Legacy</h3>
-                                <p style={{ color: '#334155', lineHeight: '1.8', whiteSpace: 'pre-line', fontSize: '1rem' }}>{veteran.story}</p>
-                            </div>
+                                <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem' }}>
+                                    <h3 style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '1rem', fontWeight: '700' }}>Combat Story & Legacy</h3>
+                                    <p style={{ color: '#334155', lineHeight: '1.8', whiteSpace: 'pre-line', fontSize: '1rem', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                                        {veteran.story}
+                                    </p>
+                                </div>
 
                             {renderSpecializedDetails()}
                         </>
