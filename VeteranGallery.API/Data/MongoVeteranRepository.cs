@@ -36,7 +36,7 @@ public class MongoVeteranRepository : IVeteranRepository
                 v.UnitName.ToLower().Contains(q) ||
                 (v is Pilot p && p.VehicleModel.ToLower().Contains(q)) ||
                 (v is Infantryman i && i.Specialization.ToLower().Contains(q)) ||
-                (v is Navy n && n.Specialization.ToLower().Contains(q))
+                (v is NavySailor n && n.Specialization.ToLower().Contains(q))
             ).ToList();
         }
 

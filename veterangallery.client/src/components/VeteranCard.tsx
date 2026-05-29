@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
-import type { Veteran, Pilot, Infantryman, DroneOperator, Navy } from '../types/veteran';
+import type { Veteran, Pilot, Infantryman, DroneOperator, NavySailor } from '../types/veteran';
 
 
 interface Props {
@@ -38,7 +38,7 @@ const VeteranCard = ({ veteran }: Props) => {
             );
         }
         if (veteran.$type === 'navy') {
-            const n = veteran as Navy;
+            const n = veteran as NavySailor;
             return (
                 <div className="text-[0.85rem] text-sky-300 mt-1">
                     {n.specialization}

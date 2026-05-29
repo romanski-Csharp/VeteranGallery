@@ -24,11 +24,38 @@ public static class MongoDbConfig
             {
                 cm.AutoMap();
                 cm.SetIsRootClass(true);
+                cm.AddKnownType(typeof(AirForceVeteran));
+                cm.AddKnownType(typeof(LandForcesVeteran));
+                cm.AddKnownType(typeof(NavyVeteran));
+                cm.AddKnownType(typeof(AirAssaultVeteran));
                 cm.AddKnownType(typeof(Pilot));
                 cm.AddKnownType(typeof(Infantryman));
                 cm.AddKnownType(typeof(DroneOperator));
-                cm.AddKnownType(typeof(Navy));
+                cm.AddKnownType(typeof(NavySailor));
+            });
 
+            BsonClassMap.RegisterClassMap<AirForceVeteran>(cm =>
+            {
+                cm.AutoMap();
+                cm.AddKnownType(typeof(Pilot));
+            });
+
+            BsonClassMap.RegisterClassMap<LandForcesVeteran>(cm =>
+            {
+                cm.AutoMap();
+                cm.AddKnownType(typeof(Infantryman));
+            });
+
+            BsonClassMap.RegisterClassMap<NavyVeteran>(cm =>
+            {
+                cm.AutoMap();
+                cm.AddKnownType(typeof(NavySailor));
+            });
+
+            BsonClassMap.RegisterClassMap<AirAssaultVeteran>(cm =>
+            {
+                cm.AutoMap();
+                cm.AddKnownType(typeof(DroneOperator));
             });
 
             _isInitialized = true;

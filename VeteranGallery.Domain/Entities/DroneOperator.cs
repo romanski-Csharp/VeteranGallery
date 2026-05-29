@@ -1,8 +1,8 @@
-﻿using VeteranGallery.Domain.Interfaces;
+using VeteranGallery.Domain.Interfaces;
 
 namespace VeteranGallery.Domain.Entities;
 
-public class DroneOperator : Veteran, IVehicleOperator
+public class DroneOperator : AirAssaultVeteran, IVehicleOperator
 {
     public string VehicleModel { get; set; } = string.Empty;
     public int ExperienceValue { get; set; }

@@ -4,7 +4,7 @@ import { ArrowLeft, Plane, Users, Anchor, Crosshair, HelpCircle, MoreVertical, E
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import AddVeteranForm from '../components/AddVeteranForm';
-import type { Veteran, Pilot, Infantryman, Navy } from '../types/veteran';
+import type { Veteran, Pilot, Infantryman, NavySailor, DroneOperator } from '../types/veteran';
 
 const VeteranDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -105,11 +105,21 @@ const VeteranDetails = () => {
             );
         }
         if (veteran.$type === 'navy') {
-            const n = veteran as Navy;
+            const n = veteran as NavySailor;
             return (
                 <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
                     <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Naval Specialization</h4>
                     <p className="my-1"><strong>Military Role:</strong> {n.specialization}</p>
+                </div>
+            );
+        }
+        if (veteran.$type === 'drone_op') {
+            const d = veteran as DroneOperator;
+            return (
+                <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                    <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Drone Operations Record</h4>
+                    <p className="my-1"><strong>Drone Model:</strong> {d.vehicleModel}</p>
+                    <p className="my-1"><strong>Sorties:</strong> {d.experienceValue}</p>
                 </div>
             );
         }

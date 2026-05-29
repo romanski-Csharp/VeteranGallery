@@ -7,6 +7,30 @@ export const apiClient = axios.create({
     }
 });
 
+// Decode the JWT exp claim and clear the token if it's already expired.
+// This runs immediately on module load so the app boots in the correct state
+// even before any API call is made (e.g. on a hard page refresh).
+const checkAndClearExpiredToken = () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return;
+
+    try {
+        // JWT payload is the second base64url segment
+        const payloadBase64 = token.split('.')[1];
+        const payload = JSON.parse(atob(payloadBase64));
+        // exp is Unix seconds; Date.now() is milliseconds
+        if (payload.exp && Date.now() >= payload.exp * 1000) {
+            localStorage.removeItem('adminToken');
+        }
+    } catch {
+        // Malformed token — remove it to be safe
+        localStorage.removeItem('adminToken');
+    }
+};
+
+checkAndClearExpiredToken();
+
+// Attach the Bearer token to every outgoing request
 apiClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('adminToken');
     if (token) {
@@ -14,6 +38,25 @@ apiClient.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// If the server returns 401 (expired or invalid token), auto-logout immediately.
+// This covers edge cases the client-side check cannot (e.g. server clock skew,
+// token revoked server-side, or a malformed payload that slipped through).
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            const hadToken = !!localStorage.getItem('adminToken');
+            localStorage.removeItem('adminToken');
+            // Only reload if we were actually logged in — avoids a reload loop
+            // on public endpoints that legitimately return 401.
+            if (hadToken) {
+                window.location.reload();
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const getVeterans = async (search?: string, branch?: number | null, sortBy?: string) => {
     const params = new URLSearchParams();

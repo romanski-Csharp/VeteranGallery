@@ -7,7 +7,7 @@ namespace VeteranGallery.Domain.Entities;
 [JsonDerivedType(typeof(Infantryman), typeDiscriminator: "infantry")]
 [JsonDerivedType(typeof(Pilot), typeDiscriminator: "pilot")]
 [JsonDerivedType(typeof(DroneOperator), typeDiscriminator: "drone_op")]
-[JsonDerivedType(typeof(Navy), typeDiscriminator: "navy")]
+[JsonDerivedType(typeof(NavySailor), typeDiscriminator: "navy")]
 public abstract class Veteran
 {
     public Guid Id { get; init; } = Guid.NewGuid();
@@ -19,6 +19,8 @@ public abstract class Veteran
     public string Story { get; set; } = string.Empty;
     public MilitaryBranch Branch { get; set; }
     public string? PhotoUrl { get; set; }
+
+    public virtual string BranchDisplayName => "Armed Forces";
 
     public abstract string GetSpecializedDescription();
 }

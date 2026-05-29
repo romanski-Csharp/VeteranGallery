@@ -45,23 +45,43 @@ export interface Veteran {
     $type: string;
 }
 
-export interface Pilot extends Veteran {
+// --- Branch-level intermediate interfaces (Level 2) ---
+
+export interface AirForceVeteran extends Veteran {
+    branch: typeof MilitaryBranch.AirForce;
+}
+
+export interface LandForcesVeteran extends Veteran {
+    branch: typeof MilitaryBranch.LandForces;
+}
+
+export interface NavyVeteranBase extends Veteran {
+    branch: typeof MilitaryBranch.Navy;
+}
+
+export interface AirAssaultVeteran extends Veteran {
+    branch: typeof MilitaryBranch.AirAssault;
+}
+
+// --- Concrete specialization interfaces (Level 3) ---
+
+export interface Pilot extends AirForceVeteran {
     $type: 'pilot';
     vehicleModel: string;
     experienceValue: number;
 }
 
-export interface Infantryman extends Veteran {
+export interface Infantryman extends LandForcesVeteran {
     $type: 'infantry';
     specialization: string;
 }
 
-export interface Navy extends Veteran {
+export interface NavySailor extends NavyVeteranBase {
     $type: 'navy';
     specialization: string;
 }
 
-export interface DroneOperator extends Veteran {
+export interface DroneOperator extends AirAssaultVeteran {
     $type: 'drone_op';
     vehicleModel: string;
     experienceValue: number;

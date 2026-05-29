@@ -204,6 +204,7 @@ const HomePage = () => {
                     <span className="border-l border-slate-800 pl-6">Infantry: <strong className="text-white">{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
                     <span className="border-l border-slate-800 pl-6">Aviation: <strong className="text-white">{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
                     <span className="border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.$type === 'navy').length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Drones: <strong className="text-white">{veterans.filter(v => v.$type === 'drone_op').length}</strong></span>
                 </div>
             </footer>
 

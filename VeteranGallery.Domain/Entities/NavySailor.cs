@@ -1,6 +1,6 @@
 namespace VeteranGallery.Domain.Entities;
 
-public class Navy : Veteran
+public class NavySailor : NavyVeteran
 {
     public string Specialization { get; set; } = string.Empty;
 

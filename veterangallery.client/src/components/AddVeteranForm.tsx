@@ -35,7 +35,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
 
         if (basicChanged) return true;
 
-        if (branch === MilitaryBranch.AirForce) {
+        if (branch === MilitaryBranch.AirForce || branch === MilitaryBranch.AirAssault) {
             return vehicleModel !== veteranToEdit.vehicleModel || experience !== veteranToEdit.experienceValue;
         } else {
             return specialization !== veteranToEdit.specialization;
@@ -70,6 +70,8 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
 
         if (branch === MilitaryBranch.AirForce) {
             payload = { ...payload, $type: 'pilot', vehicleModel, experienceValue: experience };
+        } else if (branch === MilitaryBranch.AirAssault) {
+            payload = { ...payload, $type: 'drone_op', vehicleModel, experienceValue: experience };
         } else if (branch === MilitaryBranch.Navy) {
             payload = { ...payload, $type: 'navy', specialization };
         } else {
@@ -164,20 +166,26 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
 
                 <div className="bg-slate-50 p-5 rounded-xl border border-dashed border-slate-200">
                     <h4 className="m-0 mb-3 text-[0.85rem] font-bold text-slate-600">Specialized Profile Metrics</h4>
-                    {branch === MilitaryBranch.AirForce ? (
+                    {(branch === MilitaryBranch.AirForce || branch === MilitaryBranch.AirAssault) ? (
                         <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
                             <div>
-                                <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">Aircraft Model</label>
+                                <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">
+                                    {branch === MilitaryBranch.AirForce ? 'Aircraft Model' : 'Drone Model'}
+                                </label>
                                 <input required className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-[0.95rem] text-slate-900 bg-white outline-none box-border focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 transition-all duration-200" value={vehicleModel} onChange={e => setVehicleModel(e.target.value)} />
                             </div>
                             <div>
-                                <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">Flight Hours</label>
+                                <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">
+                                    {branch === MilitaryBranch.AirForce ? 'Flight Hours' : 'Sorties'}
+                                </label>
                                 <input required type="number" min="0" className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-[0.95rem] text-slate-900 bg-white outline-none box-border focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 transition-all duration-200" value={experience} onChange={e => setExperience(Number(e.target.value))} />
                             </div>
                         </div>
                     ) : (
                         <div>
-                            <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">Infantry/Naval Specialization</label>
+                            <label className="block text-[0.85rem] font-semibold text-slate-600 mb-1.5">
+                                {branch === MilitaryBranch.Navy ? 'Naval Specialization' : 'Infantry Specialization'}
+                            </label>
                             <input required className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-[0.95rem] text-slate-900 bg-white outline-none box-border focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 transition-all duration-200" value={specialization} onChange={e => setSpecialization(e.target.value)} />
                         </div>
                     )}
