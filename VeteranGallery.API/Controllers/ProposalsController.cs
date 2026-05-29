@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeteranGallery.Domain.Entities;
 using VeteranGallery.Domain.Enums;
@@ -71,7 +71,7 @@ public class ProposalsController : ControllerBase
         var proposal = await _proposalRepository.GetByIdAsync(id);
         if (proposal == null) return NotFound();
 
-        object? currentVeteran = null;
+        Veteran? currentVeteran = null;
         if (proposal.TargetVeteranId.HasValue)
         {
             currentVeteran = await _veteranRepository.GetByIdAsync(proposal.TargetVeteranId.Value);

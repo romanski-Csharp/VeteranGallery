@@ -98,6 +98,62 @@ const HomePage = () => {
         return baseClass;
     };
 
+    const renderSpecializedMetrics = (data: any, compareData?: any) => {
+        if (!data) return null;
+        const type = data.$type;
+
+        if (type === 'pilot' || type === 'drone_op') {
+            const isPilot = type === 'pilot';
+            const colorClass = isPilot ? 'blue' : 'purple';
+            const label = isPilot ? 'Aviation Record' : 'Drone Operations Record';
+            const vehicleLabel = isPilot ? 'Aircraft' : 'Drone Model';
+            const expLabel = isPilot ? 'Flight Hours' : 'Sorties';
+            const expSuffix = isPilot ? ' hrs' : '';
+            return (
+                <div className={`border border-${colorClass}-200 bg-${colorClass}-50 rounded-xl p-4 mt-6`}>
+                    <h4 className={`m-0 mb-3 text-${colorClass}-800 text-[0.8rem] uppercase tracking-[0.5px] font-bold`}>
+                        Specialized Profile Metrics — {label}
+                    </h4>
+                    <div className="flex flex-col gap-1.5">
+                        <p className="my-0 text-[0.9rem]">
+                            <strong>{vehicleLabel}:</strong>{' '}
+                            <span className={getFieldClassName(data.vehicleModel, compareData?.vehicleModel)}>
+                                {data.vehicleModel || <em className="text-slate-400">N/A</em>}
+                            </span>
+                        </p>
+                        <p className="my-0 text-[0.9rem]">
+                            <strong>{expLabel}:</strong>{' '}
+                            <span className={getFieldClassName(data.experienceValue, compareData?.experienceValue)}>
+                                {data.experienceValue != null ? `${data.experienceValue}${expSuffix}` : <em className="text-slate-400">N/A</em>}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (type === 'infantry' || type === 'navy') {
+            const isNavy = type === 'navy';
+            const colorClass = isNavy ? 'sky' : 'green';
+            const label = isNavy ? 'Naval Specialization' : 'Infantry Specialization';
+            return (
+                <div className={`border border-${colorClass}-200 bg-${colorClass}-50 rounded-xl p-4 mt-6`}>
+                    <h4 className={`m-0 mb-3 text-${colorClass}-800 text-[0.8rem] uppercase tracking-[0.5px] font-bold`}>
+                        Specialized Profile Metrics — {label}
+                    </h4>
+                    <p className="my-0 text-[0.9rem]">
+                        <strong>Military Role:</strong>{' '}
+                        <span className={getFieldClassName(data.specialization, compareData?.specialization)}>
+                            {data.specialization || <em className="text-slate-400">N/A</em>}
+                        </span>
+                    </p>
+                </div>
+            );
+        }
+
+        return null;
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pb-10">
             <Header onFilterChange={setActiveBranch} onSearchChange={setSearchQuery} onSortChange={setSortBy} />
@@ -237,6 +293,7 @@ const HomePage = () => {
                                             {viewingProposal.proposedData.story}
                                         </p>
                                     </div>
+                                    {renderSpecializedMetrics(viewingProposal.proposedData)}
                                 </>
                             ) : (
                                 <div className="grid grid-cols-2 gap-8">
@@ -251,6 +308,7 @@ const HomePage = () => {
                                                 {viewingProposal.current.story}
                                             </p>
                                         </div>
+                                        {renderSpecializedMetrics(viewingProposal.current)}
                                     </div>
                                     <div>
                                         <h4 className="text-yellow-600 uppercase text-[0.75rem] tracking-[0.5px] mb-4">Proposed Changes</h4>
@@ -269,6 +327,7 @@ const HomePage = () => {
                                                 {viewingProposal.proposedData.story}
                                             </p>
                                         </div>
+                                        {renderSpecializedMetrics(viewingProposal.proposedData, viewingProposal.current)}
                                     </div>
                                 </div>
                             )}

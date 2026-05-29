@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldAlert, X } from 'lucide-react';
+import { ShieldAlert, X, Eye, EyeOff } from 'lucide-react';
 import { loginAdmin } from '../api/apiClient';
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
 export const LoginModal = ({ onClose }: Props) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -38,16 +39,30 @@ export const LoginModal = ({ onClose }: Props) => {
 
                 <form onSubmit={handleLogin}>
                     {error && <div className="text-red-600 text-[0.85rem] text-center bg-red-100 p-2 rounded-lg mb-4">{error}</div>}
-                    
-                    <input required type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} 
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none box-border mb-4 focus:border-slate-500 transition-colors" 
+
+                    <input required type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none box-border mb-4 focus:border-slate-500 transition-colors"
                     />
-                    
-                    <input required type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} 
-                        className="w-full px-4 py-3 border border-slate-300 rounded-lg outline-none box-border mb-6 focus:border-slate-500 transition-colors" 
-                    />
-                    
-                    <button type="submit" disabled={isLoading} 
+
+                    <div className="relative mb-6">
+                        <input
+                            required
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            className="w-full px-4 py-3 pr-12 border border-slate-300 rounded-lg outline-none box-border focus:border-slate-500 transition-colors"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
+                        >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                    </div>
+
+                    <button type="submit" disabled={isLoading}
                         className="w-full py-3 bg-slate-900 text-white border-none rounded-lg font-semibold cursor-pointer box-border hover:bg-slate-800 disabled:bg-slate-400 transition-colors">
                         {isLoading ? 'Authenticating...' : 'Enter'}
                     </button>
