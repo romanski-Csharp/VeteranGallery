@@ -98,61 +98,76 @@ const HomePage = () => {
         return baseClass;
     };
 
+    const getSubtypeLabel = (type: string): string => {
+        const labels: Record<string, string> = {
+            'infantry': 'Infantryman', 'artillery': 'Artillery Specialist', 'tank_crew': 'Tank Crewman',
+            'pilot': 'Pilot', 'air_defense': 'Air Defense Operator', 'navigator': 'Flight Navigator',
+            'drone_op': 'Drone Operator', 'paratrooper': 'Paratrooper', 'assault_sapper': 'Air Assault Sapper',
+            'navy': 'Navy Sailor', 'combat_diver': 'Combat Diver', 'naval_artillery': 'Naval Artillerist',
+            'special_ops': 'Special Forces Soldier', 'sniper': 'Sniper', 'spec_intel': 'Intelligence Officer',
+        };
+        return labels[type] ?? 'Unknown';
+    };
+
     const renderSpecializedMetrics = (data: any, compareData?: any) => {
         if (!data) return null;
         const type = data.$type;
 
-        if (type === 'pilot' || type === 'drone_op') {
-            const isPilot = type === 'pilot';
-            const colorClass = isPilot ? 'blue' : 'purple';
-            const label = isPilot ? 'Aviation Record' : 'Drone Operations Record';
-            const vehicleLabel = isPilot ? 'Aircraft' : 'Drone Model';
-            const expLabel = isPilot ? 'Flight Hours' : 'Sorties';
-            const expSuffix = isPilot ? ' hrs' : '';
-            return (
-                <div className={`border border-${colorClass}-200 bg-${colorClass}-50 rounded-xl p-4 mt-6`}>
-                    <h4 className={`m-0 mb-3 text-${colorClass}-800 text-[0.8rem] uppercase tracking-[0.5px] font-bold`}>
-                        Specialized Profile Metrics — {label}
-                    </h4>
-                    <div className="flex flex-col gap-1.5">
-                        <p className="my-0 text-[0.9rem]">
-                            <strong>{vehicleLabel}:</strong>{' '}
-                            <span className={getFieldClassName(data.vehicleModel, compareData?.vehicleModel)}>
-                                {data.vehicleModel || <em className="text-slate-400">N/A</em>}
-                            </span>
-                        </p>
-                        <p className="my-0 text-[0.9rem]">
-                            <strong>{expLabel}:</strong>{' '}
-                            <span className={getFieldClassName(data.experienceValue, compareData?.experienceValue)}>
-                                {data.experienceValue != null ? `${data.experienceValue}${expSuffix}` : <em className="text-slate-400">N/A</em>}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            );
-        }
+        const colorMap: Record<string, string> = {
+            infantry: 'green', artillery: 'green', tank_crew: 'green',
+            pilot: 'blue', air_defense: 'blue', navigator: 'blue',
+            drone_op: 'purple', paratrooper: 'purple', assault_sapper: 'purple',
+            navy: 'sky', combat_diver: 'sky', naval_artillery: 'sky',
+            special_ops: 'red', sniper: 'red', spec_intel: 'red',
+        };
+        const color = colorMap[type];
+        if (!color) return null;
 
-        if (type === 'infantry' || type === 'navy') {
-            const isNavy = type === 'navy';
-            const colorClass = isNavy ? 'sky' : 'green';
-            const label = isNavy ? 'Naval Specialization' : 'Infantry Specialization';
-            return (
-                <div className={`border border-${colorClass}-200 bg-${colorClass}-50 rounded-xl p-4 mt-6`}>
-                    <h4 className={`m-0 mb-3 text-${colorClass}-800 text-[0.8rem] uppercase tracking-[0.5px] font-bold`}>
-                        Specialized Profile Metrics — {label}
-                    </h4>
-                    <p className="my-0 text-[0.9rem]">
-                        <strong>Military Role:</strong>{' '}
-                        <span className={getFieldClassName(data.specialization, compareData?.specialization)}>
-                            {data.specialization || <em className="text-slate-400">N/A</em>}
-                        </span>
-                    </p>
-                </div>
-            );
-        }
+        const label = getSubtypeLabel(type);
+        const fields: { label: string; propKey: string; suffix?: string }[] = (() => {
+            switch (type) {
+                case 'infantry':        return [{ label: 'Specialization', propKey: 'specialization' }];
+                case 'artillery':       return [{ label: 'Weapon System', propKey: 'weaponSystem' }, { label: 'Max Range', propKey: 'maxRangeKm', suffix: ' km' }];
+                case 'tank_crew':       return [{ label: 'Tank', propKey: 'vehicleModel' }, { label: 'Crew Position', propKey: 'crewPosition' }];
+                case 'pilot':           return [{ label: 'Aircraft', propKey: 'vehicleModel' }, { label: 'Flight Hours', propKey: 'experienceValue', suffix: ' hrs' }];
+                case 'air_defense':     return [{ label: 'System', propKey: 'systemType' }, { label: 'Confirmed Interceptions', propKey: 'confirmedInterceptions' }];
+                case 'navigator':       return [{ label: 'Navigation System', propKey: 'navigationSystem' }, { label: 'Combat Sorties', propKey: 'sortieCount' }];
+                case 'drone_op':        return [{ label: 'Drone Model', propKey: 'vehicleModel' }, { label: 'Sorties', propKey: 'experienceValue' }];
+                case 'paratrooper':     return [{ label: 'Parachute System', propKey: 'parachuteType' }, { label: 'Total Jumps', propKey: 'totalJumps' }];
+                case 'assault_sapper':  return [{ label: 'Qualification', propKey: 'sapperQualification' }, { label: 'Objects Demined', propKey: 'minesCleared' }];
+                case 'navy':            return [{ label: 'Specialization', propKey: 'specialization' }];
+                case 'combat_diver':    return [{ label: 'Max Depth', propKey: 'divingDepthRating', suffix: ' m' }, { label: 'Underwater Missions', propKey: 'underwaterMissions' }];
+                case 'naval_artillery': return [{ label: 'Coastal System', propKey: 'coastalSystem' }, { label: 'Sector', propKey: 'coastalSector' }];
+                case 'special_ops':     return data.isClassified ? [] : [{ label: 'Special Unit', propKey: 'specialUnit' }, { label: 'Mission Type', propKey: 'missionType' }];
+                case 'sniper':          return data.isClassified ? [] : [{ label: 'Rifle', propKey: 'rifleModel' }, { label: 'Max Effective Range', propKey: 'maxEffectiveRange', suffix: ' m' }];
+                case 'spec_intel':      return data.isClassified ? [] : [{ label: 'Specialty', propKey: 'intelSpecialty' }, { label: 'Field Operations', propKey: 'fieldOperations' }];
+                default:                return [];
+            }
+        })();
 
-        return null;
+        return (
+            <div className={`border border-${color}-200 bg-${color}-50 rounded-xl p-4 mt-6`}>
+                <h4 className={`m-0 mb-3 text-${color}-800 text-[0.8rem] uppercase tracking-[0.5px] font-bold`}>
+                    Specialized Profile Metrics — {label}
+                </h4>
+                <div className="flex flex-col gap-1.5">
+                    {(type === 'special_ops' || type === 'sniper' || type === 'spec_intel') && data.isClassified ? (
+                        <p className="my-0 text-[0.9rem] italic text-slate-500">Service details are classified.</p>
+                    ) : (
+                        fields.map(f => (
+                            <p key={f.propKey} className="my-0 text-[0.9rem]">
+                                <strong>{f.label}:</strong>{' '}
+                                <span className={getFieldClassName(data[f.propKey], compareData?.[f.propKey])}>
+                                    {data[f.propKey] != null ? `${data[f.propKey]}${f.suffix ?? ''}` : <em className="text-slate-400">N/A</em>}
+                                </span>
+                            </p>
+                        ))
+                    )}
+                </div>
+            </div>
+        );
     };
+
 
     return (
         <div className="min-h-screen flex flex-col bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pb-10">
@@ -220,6 +235,10 @@ const HomePage = () => {
                                         <span className={`text-[0.7rem] font-extrabold uppercase px-2 py-1 rounded inline-block mb-2 ${p.type === 1 ? 'bg-green-100 text-green-800' : 'bg-indigo-100 text-indigo-800'}`}>
                                             {p.type === 1 ? 'New Profile' : 'Profile Edit'}
                                         </span>
+                                        <span className="text-[0.7rem] font-bold uppercase px-2 py-1 rounded inline-block mb-2 ml-2 bg-slate-100 text-slate-600">
+                                            {getSubtypeLabel(p.proposedData.$type)}
+                                        </span>
+
                                         <h3 className="m-0 mb-1 text-[1.2rem] text-slate-900 font-bold">{p.proposedData.fullName}</h3>
                                         <p className="m-0 text-slate-500 text-[0.9rem]">{getRankDisplayName(p.proposedData.rank, p.proposedData.branch)} • {p.proposedData.unitName}</p>
                                     </div>
@@ -277,9 +296,13 @@ const HomePage = () => {
                         </div>
 
                         <div className="custom-scroll flex-1 p-12 pr-10 overflow-y-auto">
-                            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold text-[0.85rem] mb-6 ${viewingProposal.type === 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold text-[0.85rem] mb-2 ${viewingProposal.type === 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                                 {viewingProposal.type === 1 ? 'New Profile Preview' : 'Proposed Edits Comparison'}
                             </div>
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-semibold text-[0.85rem] mb-6 ml-2 bg-slate-100 text-slate-600">
+                                {getSubtypeLabel(viewingProposal.proposedData.$type)}
+                            </div>
+
 
                             {viewingProposal.type === 1 || !viewingProposal.current ? (
                                 <>

@@ -91,6 +91,17 @@ const VeteranDetails = () => {
         }
     };
 
+    const getSubtypeLabel = (type: string): string => {
+        const labels: Record<string, string> = {
+            'infantry': 'Infantryman', 'artillery': 'Artillery Specialist', 'tank_crew': 'Tank Crewman',
+            'pilot': 'Pilot', 'air_defense': 'Air Defense Operator', 'navigator': 'Flight Navigator',
+            'drone_op': 'Drone Operator', 'paratrooper': 'Paratrooper', 'assault_sapper': 'Air Assault Sapper',
+            'navy': 'Navy Sailor', 'combat_diver': 'Combat Diver', 'naval_artillery': 'Naval Artillerist',
+            'special_ops': 'Special Forces Soldier', 'sniper': 'Sniper', 'spec_intel': 'Intelligence Officer',
+        };
+        return labels[type] ?? 'Unknown';
+    };
+
     const renderSpecializedDetails = () => {
         switch (veteran.$type) {
             case 'infantry': {
@@ -325,9 +336,14 @@ const VeteranDetails = () => {
                         />
                     ) : (
                         <>
-                            <div className="inline-flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-full text-slate-600 font-semibold text-[0.85rem] mb-4">
-                                {getBranchIcon()}
-                                {getBranchName()}
+                            <div className="flex items-center gap-2 mb-4 flex-wrap">
+                                <div className="inline-flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-full text-slate-600 font-semibold text-[0.85rem]">
+                                    {getBranchIcon()}
+                                    {getBranchName()}
+                                </div>
+                                <div className="inline-flex items-center gap-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-white font-semibold text-[0.85rem]">
+                                    {getSubtypeLabel(veteran.$type)}
+                                </div>
                             </div>
 
                             <h2 className="m-0 mb-2 text-[2.5rem] text-slate-900 font-extrabold leading-none">{veteran.fullName}</h2>

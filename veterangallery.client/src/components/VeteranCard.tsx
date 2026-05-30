@@ -25,6 +25,17 @@ const VeteranCard = ({ veteran }: Props) => {
         }
     };
 
+    const getSubtypeLabel = (type: string): string => {
+        const labels: Record<string, string> = {
+            'infantry': 'Infantryman', 'artillery': 'Artillery', 'tank_crew': 'Tank Crew',
+            'pilot': 'Pilot', 'air_defense': 'Air Defense', 'navigator': 'Navigator',
+            'drone_op': 'Drone Op', 'paratrooper': 'Paratrooper', 'assault_sapper': 'Sapper',
+            'navy': 'Sailor', 'combat_diver': 'Diver', 'naval_artillery': 'Naval Art.',
+            'special_ops': 'Spec Ops', 'sniper': 'Sniper', 'spec_intel': 'Intel',
+        };
+        return labels[type] ?? '';
+    };
+
     const renderSpecializedInfo = () => {
         switch (veteran.$type) {
             case 'infantry': {
@@ -106,7 +117,7 @@ const VeteranCard = ({ veteran }: Props) => {
             />
 
             <div className="absolute top-3 right-3 bg-black/65 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-xs uppercase tracking-[0.5px]">
-                {getBranchName()}
+                {getBranchName()} • {getSubtypeLabel(veteran.$type)}
             </div>
 
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/95 via-slate-900/60 to-transparent pt-10 px-4 pb-4 text-white">
