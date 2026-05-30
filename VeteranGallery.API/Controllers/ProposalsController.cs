@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using VeteranGallery.Domain.Entities;
 using VeteranGallery.Domain.Enums;
 using VeteranGallery.Domain.Interfaces;
-using System.Reflection;
 
 namespace VeteranGallery.API.Controllers;
 
@@ -24,21 +23,18 @@ public class ProposalsController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SubmitProposal([FromBody] Veteran proposedVeteran, [FromQuery] bool isUpdate = false)
     {
-        var proposal = new VeteranProposal
+        try
         {
-            Type = isUpdate ? ProposalType.Update : ProposalType.Create,
-            TargetVeteranId = isUpdate ? proposedVeteran.Id : null,
-            ProposedData = proposedVeteran
-        };
-
-        if (proposal.Type == ProposalType.Create)
-        {
-            var propInfo = typeof(Veteran).GetProperty("Id");
-            if (propInfo != null && propInfo.CanWrite)
-            {
-                propInfo.SetValue(proposal.ProposedData, Guid.NewGuid());
-            }
+            proposedVeteran.Validate();
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+
+        var proposal = isUpdate
+            ? VeteranProposal.CreateUpdate(proposedVeteran)
+            : VeteranProposal.CreateNew(proposedVeteran);
 
         await _proposalRepository.AddAsync(proposal);
         return Ok(new { message = "Пропозиція успішно відправлена на модерацію!" });
@@ -57,10 +53,12 @@ public class ProposalsController : ControllerBase
     public async Task<IActionResult> RestoreProposal(Guid id)
     {
         var proposal = await _proposalRepository.GetByIdAsync(id);
-        if (proposal == null || proposal.Status != ProposalStatus.Rejected)
-            return NotFound("Пропозицію не знайдено або вона не відхилена.");
+        if (proposal == null) return NotFound("Пропозицію не знайдено.");
 
-        await _proposalRepository.UpdateStatusAsync(id, ProposalStatus.Pending);
+        try { proposal.Restore(); }
+        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+
+        await _proposalRepository.UpdateStatusAsync(id, proposal.Status);
         return Ok(new { message = "Пропозицію успішно повернуто на розгляд." });
     }
 
@@ -89,30 +87,31 @@ public class ProposalsController : ControllerBase
     public async Task<IActionResult> ApproveProposal(Guid id)
     {
         var proposal = await _proposalRepository.GetByIdAsync(id);
-        if (proposal == null || proposal.Status != ProposalStatus.Pending)
-            return NotFound("Пропозицію не знайдено або вона вже оброблена.");
+        if (proposal == null) return NotFound("Пропозицію не знайдено.");
+
+        try { proposal.Approve(); }
+        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
 
         if (proposal.Type == ProposalType.Create)
-        {
             await _veteranRepository.AddAsync(proposal.ProposedData);
-        }
         else if (proposal.Type == ProposalType.Update)
-        {
             await _veteranRepository.UpdateAsync(proposal.ProposedData);
-        }
 
-        await _proposalRepository.UpdateStatusAsync(id, ProposalStatus.Approved);
+        await _proposalRepository.UpdateStatusAsync(id, proposal.Status);
         return Ok(new { message = "Профіль успішно схвалено та опубліковано!" });
     }
+
     [HttpPost("{id}/reject")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> RejectProposal(Guid id)
     {
         var proposal = await _proposalRepository.GetByIdAsync(id);
-        if (proposal == null || proposal.Status != ProposalStatus.Pending)
-            return NotFound("Пропозицію не знайдено або вона вже оброблена.");
+        if (proposal == null) return NotFound("Пропозицію не знайдено.");
 
-        await _proposalRepository.UpdateStatusAsync(id, ProposalStatus.Rejected);
+        try { proposal.Reject(); }
+        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+
+        await _proposalRepository.UpdateStatusAsync(id, proposal.Status);
         return Ok(new { message = "Пропозицію відхилено." });
     }
-}
+}

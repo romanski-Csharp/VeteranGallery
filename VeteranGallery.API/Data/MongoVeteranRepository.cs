@@ -34,9 +34,7 @@ public class MongoVeteranRepository : IVeteranRepository
             all = all.Where(v =>
                 v.FullName.ToLower().Contains(q) ||
                 v.UnitName.ToLower().Contains(q) ||
-                (v is Pilot p && p.VehicleModel.ToLower().Contains(q)) ||
-                (v is Infantryman i && i.Specialization.ToLower().Contains(q)) ||
-                (v is NavySailor n && n.Specialization.ToLower().Contains(q))
+                v.GetSearchableText().ToLower().Contains(q)
             ).ToList();
         }
 

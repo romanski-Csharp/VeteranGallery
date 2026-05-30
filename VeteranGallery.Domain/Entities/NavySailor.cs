@@ -5,5 +5,8 @@ public class NavySailor : NavyVeteran
     public string Specialization { get; set; } = string.Empty;
 
     public override string GetSpecializedDescription()
-        => $"Navy, specialization: {Specialization}. Service in unit {UnitName}.";
+        => $"Navy Sailor, Specialization: {Specialization}. {GetNavySummary()}";
+
+    public override string GetSearchableText()
+        => $"{base.GetSearchableText()} {Specialization}".Trim();
 }

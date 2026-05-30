@@ -5,8 +5,13 @@ namespace VeteranGallery.Domain.Entities;
 public class Pilot : AirForceVeteran, IVehicleOperator
 {
     public string VehicleModel { get; set; } = string.Empty;
-    public int ExperienceValue { get; set; }
+
+    public string GetOperationalSummary()
+        => $"Vehicle Model: {VehicleModel}. {GetAviatorSummary()}";
 
     public override string GetSpecializedDescription()
-        => $"Pilot of air forces. Aircraft: {VehicleModel}. Flight hours: {ExperienceValue}.";
-}
+        => $"Pilot of the Air Force. {GetOperationalSummary()}";
+
+    public override string GetSearchableText()
+        => $"{base.GetSearchableText()} {VehicleModel}".Trim();
+}

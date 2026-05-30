@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plane, Users, Anchor, Crosshair, HelpCircle, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plane, Users, Anchor, Crosshair, Shield, HelpCircle, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import AddVeteranForm from '../components/AddVeteranForm';
-import type { Veteran, Pilot, Infantryman, NavySailor, DroneOperator } from '../types/veteran';
+import type {
+    Veteran, Pilot, Infantryman, NavySailor, DroneOperator,
+    Artillery, TankCrewman, AirDefenseOperator, FlightNavigator,
+    CombatDiver, NavalArtillerist, Paratrooper, AirAssaultSapper,
+    Sniper, SpecialForcesSoldier, SpecialOpsIntelligence
+} from '../types/veteran';
 
 const VeteranDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -66,64 +71,191 @@ const VeteranDetails = () => {
 
     const getBranchIcon = () => {
         switch (veteran.branch) {
-            case MilitaryBranch.LandForces: return <Users size={20} />;
-            case MilitaryBranch.AirForce: return <Plane size={20} />;
-            case MilitaryBranch.AirAssault: return <Crosshair size={20} />;
-            case MilitaryBranch.Navy: return <Anchor size={20} />;
+            case MilitaryBranch.LandForces:  return <Users size={20} />;
+            case MilitaryBranch.AirForce:    return <Plane size={20} />;
+            case MilitaryBranch.AirAssault:  return <Crosshair size={20} />;
+            case MilitaryBranch.Navy:        return <Anchor size={20} />;
+            case MilitaryBranch.SpecialOps:  return <Shield size={20} />;
             default: return <HelpCircle size={20} />;
         }
     };
 
     const getBranchName = () => {
         switch (veteran.branch) {
-            case MilitaryBranch.LandForces: return "Land Forces";
-            case MilitaryBranch.AirForce: return "Air Force";
-            case MilitaryBranch.AirAssault: return "Air Assault Forces";
-            case MilitaryBranch.Navy: return "Navy";
-            default: return "Armed Forces";
+            case MilitaryBranch.LandForces:  return 'Land Forces';
+            case MilitaryBranch.AirForce:    return 'Air Force';
+            case MilitaryBranch.AirAssault:  return 'Air Assault Forces';
+            case MilitaryBranch.Navy:        return 'Navy';
+            case MilitaryBranch.SpecialOps:  return 'Special Operations Forces';
+            default: return 'Armed Forces';
         }
     };
 
     const renderSpecializedDetails = () => {
-        if (veteran.$type === 'pilot') {
-            const p = veteran as Pilot;
-            return (
-                <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
-                    <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Aviation Record</h4>
-                    <p className="my-1"><strong>Aircraft:</strong> {p.vehicleModel}</p>
-                    <p className="my-1"><strong>Flight Hours:</strong> {p.experienceValue} hrs</p>
-                </div>
-            );
+        switch (veteran.$type) {
+            case 'infantry': {
+                const v = veteran as Infantryman;
+                return (
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Infantry Record</h4>
+                        <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
+                    </div>
+                );
+            }
+            case 'artillery': {
+                const v = veteran as Artillery;
+                return (
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Artillery Record</h4>
+                        <p className="my-1"><strong>Weapon System:</strong> {v.weaponSystem}</p>
+                        <p className="my-1"><strong>Max Range:</strong> {v.maxRangeKm} km</p>
+                    </div>
+                );
+            }
+            case 'tank_crew': {
+                const v = veteran as TankCrewman;
+                return (
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Armoured Forces Record</h4>
+                        <p className="my-1"><strong>Tank:</strong> {v.vehicleModel}</p>
+                        <p className="my-1"><strong>Crew Position:</strong> {v.crewPosition}</p>
+                    </div>
+                );
+            }
+            case 'pilot': {
+                const v = veteran as Pilot;
+                return (
+                    <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                        <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Aviation Record</h4>
+                        <p className="my-1"><strong>Aircraft:</strong> {v.vehicleModel}</p>
+                        <p className="my-1"><strong>Flight Hours:</strong> {v.experienceValue} hrs</p>
+                    </div>
+                );
+            }
+            case 'air_defense': {
+                const v = veteran as AirDefenseOperator;
+                return (
+                    <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                        <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Air Defense Record</h4>
+                        <p className="my-1"><strong>System:</strong> {v.systemType}</p>
+                        <p className="my-1"><strong>Confirmed Interceptions:</strong> {v.confirmedInterceptions}</p>
+                    </div>
+                );
+            }
+            case 'navigator': {
+                const v = veteran as FlightNavigator;
+                return (
+                    <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                        <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Navigation Record</h4>
+                        <p className="my-1"><strong>Navigation System:</strong> {v.navigationSystem}</p>
+                        <p className="my-1"><strong>Combat Sorties:</strong> {v.sortieCount}</p>
+                    </div>
+                );
+            }
+            case 'drone_op': {
+                const v = veteran as DroneOperator;
+                return (
+                    <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                        <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Drone Operations Record</h4>
+                        <p className="my-1"><strong>Drone Model:</strong> {v.vehicleModel}</p>
+                        <p className="my-1"><strong>Sorties:</strong> {v.experienceValue}</p>
+                    </div>
+                );
+            }
+            case 'paratrooper': {
+                const v = veteran as Paratrooper;
+                return (
+                    <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                        <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Airborne Record</h4>
+                        <p className="my-1"><strong>Parachute System:</strong> {v.parachuteType}</p>
+                        <p className="my-1"><strong>Total Jumps:</strong> {v.totalJumps}</p>
+                    </div>
+                );
+            }
+            case 'assault_sapper': {
+                const v = veteran as AirAssaultSapper;
+                return (
+                    <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                        <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Sapper Record</h4>
+                        <p className="my-1"><strong>Qualification:</strong> {v.sapperQualification}</p>
+                        <p className="my-1"><strong>Objects Demined:</strong> {v.minesCleared}</p>
+                    </div>
+                );
+            }
+            case 'navy': {
+                const v = veteran as NavySailor;
+                return (
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Record</h4>
+                        <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
+                    </div>
+                );
+            }
+            case 'combat_diver': {
+                const v = veteran as CombatDiver;
+                return (
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Combat Diving Record</h4>
+                        <p className="my-1"><strong>Max Depth:</strong> {v.divingDepthRating} m</p>
+                        <p className="my-1"><strong>Underwater Missions:</strong> {v.underwaterMissions}</p>
+                    </div>
+                );
+            }
+            case 'naval_artillery': {
+                const v = veteran as NavalArtillerist;
+                return (
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Artillery Record</h4>
+                        <p className="my-1"><strong>Coastal System:</strong> {v.coastalSystem}</p>
+                        <p className="my-1"><strong>Sector:</strong> {v.coastalSector}</p>
+                    </div>
+                );
+            }
+            case 'special_ops': {
+                const v = veteran as SpecialForcesSoldier;
+                return (
+                    <div className="bg-red-50 p-5 rounded-xl mt-6 border-l-4 border-red-500">
+                        <h4 className="m-0 mb-2 text-red-800 text-[0.9rem] uppercase">Special Forces Record</h4>
+                        {v.isClassified
+                            ? <p className="my-1 italic text-slate-500">Details of service are classified.</p>
+                            : <p className="my-1"><strong>Special Unit:</strong> {v.specialUnit}</p>
+                        }
+                    </div>
+                );
+            }
+            case 'sniper': {
+                const v = veteran as Sniper;
+                return (
+                    <div className="bg-red-50 p-5 rounded-xl mt-6 border-l-4 border-red-500">
+                        <h4 className="m-0 mb-2 text-red-800 text-[0.9rem] uppercase">Sniper Record</h4>
+                        {v.isClassified
+                            ? <p className="my-1 italic text-slate-500">Details of service are classified.</p>
+                            : <>
+                                <p className="my-1"><strong>Rifle:</strong> {v.rifleModel}</p>
+                                <p className="my-1"><strong>Max Effective Range:</strong> {v.maxEffectiveRange} m</p>
+                            </>
+                        }
+                    </div>
+                );
+            }
+            case 'spec_intel': {
+                const v = veteran as SpecialOpsIntelligence;
+                return (
+                    <div className="bg-red-50 p-5 rounded-xl mt-6 border-l-4 border-red-500">
+                        <h4 className="m-0 mb-2 text-red-800 text-[0.9rem] uppercase">Intelligence Record</h4>
+                        {v.isClassified
+                            ? <p className="my-1 italic text-slate-500">Details of service are classified.</p>
+                            : <>
+                                <p className="my-1"><strong>Specialty:</strong> {v.intelSpecialty}</p>
+                                <p className="my-1"><strong>Field Operations:</strong> {v.fieldOperations}</p>
+                            </>
+                        }
+                    </div>
+                );
+            }
+            default:
+                return null;
         }
-        if (veteran.$type === 'infantry') {
-            const i = veteran as Infantryman;
-            return (
-                <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
-                    <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Infantry/Naval Specialization</h4>
-                    <p className="my-1"><strong>Military Role:</strong> {i.specialization}</p>
-                </div>
-            );
-        }
-        if (veteran.$type === 'navy') {
-            const n = veteran as NavySailor;
-            return (
-                <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
-                    <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Naval Specialization</h4>
-                    <p className="my-1"><strong>Military Role:</strong> {n.specialization}</p>
-                </div>
-            );
-        }
-        if (veteran.$type === 'drone_op') {
-            const d = veteran as DroneOperator;
-            return (
-                <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
-                    <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Drone Operations Record</h4>
-                    <p className="my-1"><strong>Drone Model:</strong> {d.vehicleModel}</p>
-                    <p className="my-1"><strong>Sorties:</strong> {d.experienceValue}</p>
-                </div>
-            );
-        }
-        return null;
     };
 
     return (

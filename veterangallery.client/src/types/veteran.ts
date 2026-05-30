@@ -2,7 +2,8 @@ export const MilitaryBranch = {
     LandForces: 1,
     AirForce: 2,
     AirAssault: 3,
-    Navy: 4
+    Navy: 4,
+    SpecialOps: 5
 } as const;
 
 export type MilitaryBranch = typeof MilitaryBranch[keyof typeof MilitaryBranch];
@@ -45,30 +46,37 @@ export interface Veteran {
     $type: string;
 }
 
-// --- Branch-level intermediate interfaces (Level 2) ---
-
 export interface AirForceVeteran extends Veteran {
     branch: typeof MilitaryBranch.AirForce;
+    totalFlightHours: number;
+    airBase: string;
+    hasCombatMissions: boolean;
 }
 
 export interface LandForcesVeteran extends Veteran {
     branch: typeof MilitaryBranch.LandForces;
+    primaryWeapon: string;
+    combatDeployments: number;
+    areaOfOperations: string;
 }
 
 export interface NavyVeteranBase extends Veteran {
     branch: typeof MilitaryBranch.Navy;
+    vesselName: string;
+    vesselType: string;
+    totalSeaDays: number;
 }
 
 export interface AirAssaultVeteran extends Veteran {
     branch: typeof MilitaryBranch.AirAssault;
+    totalOperationHours: number;
+    primaryTheatre: string;
 }
 
-// --- Concrete specialization interfaces (Level 3) ---
-
-export interface Pilot extends AirForceVeteran {
-    $type: 'pilot';
-    vehicleModel: string;
-    experienceValue: number;
+export interface SpecialOpsVeteranBase extends Veteran {
+    branch: typeof MilitaryBranch.SpecialOps;
+    missionType: string;
+    isClassified: boolean;
 }
 
 export interface Infantryman extends LandForcesVeteran {
@@ -76,15 +84,86 @@ export interface Infantryman extends LandForcesVeteran {
     specialization: string;
 }
 
-export interface NavySailor extends NavyVeteranBase {
-    $type: 'navy';
-    specialization: string;
+export interface Artillery extends LandForcesVeteran {
+    $type: 'artillery';
+    weaponSystem: string;
+    maxRangeKm: number;
+}
+
+export interface TankCrewman extends LandForcesVeteran {
+    $type: 'tank_crew';
+    vehicleModel: string;
+    crewPosition: string;
+}
+
+export interface Pilot extends AirForceVeteran {
+    $type: 'pilot';
+    vehicleModel: string;
+    experienceValue: number;
+}
+
+export interface AirDefenseOperator extends AirForceVeteran {
+    $type: 'air_defense';
+    systemType: string;
+    confirmedInterceptions: number;
+}
+
+export interface FlightNavigator extends AirForceVeteran {
+    $type: 'navigator';
+    navigationSystem: string;
+    sortieCount: number;
 }
 
 export interface DroneOperator extends AirAssaultVeteran {
     $type: 'drone_op';
     vehicleModel: string;
     experienceValue: number;
+}
+
+export interface Paratrooper extends AirAssaultVeteran {
+    $type: 'paratrooper';
+    totalJumps: number;
+    parachuteType: string;
+}
+
+export interface AirAssaultSapper extends AirAssaultVeteran {
+    $type: 'assault_sapper';
+    minesCleared: number;
+    sapperQualification: string;
+}
+
+export interface NavySailor extends NavyVeteranBase {
+    $type: 'navy';
+    specialization: string;
+}
+
+export interface CombatDiver extends NavyVeteranBase {
+    $type: 'combat_diver';
+    divingDepthRating: number;
+    underwaterMissions: number;
+}
+
+export interface NavalArtillerist extends NavyVeteranBase {
+    $type: 'naval_artillery';
+    coastalSystem: string;
+    coastalSector: string;
+}
+
+export interface SpecialForcesSoldier extends SpecialOpsVeteranBase {
+    $type: 'special_ops';
+    specialUnit: string;
+}
+
+export interface Sniper extends SpecialOpsVeteranBase {
+    $type: 'sniper';
+    maxEffectiveRange: number;
+    rifleModel: string;
+}
+
+export interface SpecialOpsIntelligence extends SpecialOpsVeteranBase {
+    $type: 'spec_intel';
+    intelSpecialty: string;
+    fieldOperations: number;
 }
 
 export const getRankDisplayName = (rank: MilitaryRank, branch: MilitaryBranch): string => {
