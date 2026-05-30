@@ -80,17 +80,6 @@ const VeteranDetails = () => {
         }
     };
 
-    const getBranchName = () => {
-        switch (veteran.branch) {
-            case MilitaryBranch.LandForces:  return 'Land Forces';
-            case MilitaryBranch.AirForce:    return 'Air Force';
-            case MilitaryBranch.AirAssault:  return 'Air Assault Forces';
-            case MilitaryBranch.Navy:        return 'Navy';
-            case MilitaryBranch.SpecialOps:  return 'Special Operations Forces';
-            default: return 'Armed Forces';
-        }
-    };
-
     const getSubtypeLabel = (type: string): string => {
         const labels: Record<string, string> = {
             'infantry': 'Infantryman', 'artillery': 'Artillery Specialist', 'tank_crew': 'Tank Crewman',

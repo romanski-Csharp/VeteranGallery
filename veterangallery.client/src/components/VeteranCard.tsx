@@ -25,17 +25,6 @@ const VeteranCard = ({ veteran }: Props) => {
         }
     };
 
-    const getSubtypeLabel = (type: string): string => {
-        const labels: Record<string, string> = {
-            'infantry': 'Infantryman', 'artillery': 'Artillery', 'tank_crew': 'Tank Crew',
-            'pilot': 'Pilot', 'air_defense': 'Air Defense', 'navigator': 'Navigator',
-            'drone_op': 'Drone Op', 'paratrooper': 'Paratrooper', 'assault_sapper': 'Sapper',
-            'navy': 'Sailor', 'combat_diver': 'Diver', 'naval_artillery': 'Naval Art.',
-            'special_ops': 'Spec Ops', 'sniper': 'Sniper', 'spec_intel': 'Intel',
-        };
-        return labels[type] ?? '';
-    };
-
     const renderSpecializedInfo = () => {
         switch (veteran.$type) {
             case 'infantry': {
