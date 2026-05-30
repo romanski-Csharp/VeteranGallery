@@ -10,6 +10,12 @@ DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrEmpty(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
 MongoDbConfig.Initialize();
 
 builder.Services.AddControllers()
@@ -51,7 +57,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:58294", "https://localhost:5173", "http://localhost:5173")
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
