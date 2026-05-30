@@ -117,7 +117,7 @@ const VeteranCard = ({ veteran }: Props) => {
             />
 
             <div className="absolute top-3 right-3 bg-black/65 text-white px-3 py-1 rounded-full text-xs font-bold backdrop-blur-xs uppercase tracking-[0.5px]">
-                {getBranchName()} • {getSubtypeLabel(veteran.$type)}
+                {getBranchName()}
             </div>
 
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-900/95 via-slate-900/60 to-transparent pt-10 px-4 pb-4 text-white">

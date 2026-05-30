@@ -337,11 +337,8 @@ const VeteranDetails = () => {
                     ) : (
                         <>
                             <div className="flex items-center gap-2 mb-4 flex-wrap">
-                                <div className="inline-flex items-center gap-2 bg-slate-100 px-3.5 py-1.5 rounded-full text-slate-600 font-semibold text-[0.85rem]">
-                                    {getBranchIcon()}
-                                    {getBranchName()}
-                                </div>
                                 <div className="inline-flex items-center gap-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-white font-semibold text-[0.85rem]">
+                                    {getBranchIcon()}
                                     {getSubtypeLabel(veteran.$type)}
                                 </div>
                             </div>

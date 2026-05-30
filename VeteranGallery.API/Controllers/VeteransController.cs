@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VeteranGallery.Domain.Entities;
 using VeteranGallery.Domain.Interfaces;
@@ -31,7 +31,7 @@ public class VeteransController : ControllerBase
     {
         var veteran = await _repository.GetByIdAsync(id);
         if (veteran == null) return NotFound();
-        return Ok(veteran);
+        return veteran;
     }
 
     [HttpPost]
