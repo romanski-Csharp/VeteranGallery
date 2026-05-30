@@ -127,6 +127,7 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                     <FilterButton label="Air Force" value={MilitaryBranch.AirForce} />
                     <FilterButton label="Air Assault" value={MilitaryBranch.AirAssault} />
                     <FilterButton label="Navy" value={MilitaryBranch.Navy} />
+                    <FilterButton label="Special Ops" value={MilitaryBranch.SpecialOps} />
                 </nav>
             </header>
 

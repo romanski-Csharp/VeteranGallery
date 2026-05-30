@@ -276,10 +276,11 @@ const HomePage = () => {
                 </div>
                 <div className="flex gap-6 font-medium">
                     <span>Total Profiles: <strong className="text-white">{veterans.length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Infantry: <strong className="text-white">{veterans.filter(v => v.$type === 'infantry').length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Aviation: <strong className="text-white">{veterans.filter(v => v.$type === 'pilot').length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.$type === 'navy').length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Drones: <strong className="text-white">{veterans.filter(v => v.$type === 'drone_op').length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Infantry: <strong className="text-white">{veterans.filter(v => v.branch === 1).length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Aviation: <strong className="text-white">{veterans.filter(v => v.branch === 2).length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.branch === 3).length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">Drones: <strong className="text-white">{veterans.filter(v => v.branch === 4).length}</strong></span>
+                    <span className="border-l border-slate-800 pl-6">SpecOps: <strong className="text-white">{veterans.filter(v => v.branch === 5).length}</strong></span>
                 </div>
             </footer>
 
