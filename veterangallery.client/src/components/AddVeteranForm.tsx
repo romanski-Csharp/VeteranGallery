@@ -9,7 +9,6 @@ interface Props {
     onCancel?: () => void;
 }
 
-// ── Subtype options per branch ─────────────────────────────────────────────────
 const subtypesByBranch: Record<number, { label: string; value: string }[]> = {
     [MilitaryBranch.LandForces]: [
         { label: 'Infantryman', value: 'infantry' },
@@ -52,60 +51,48 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     const [branch, setBranch] = useState<MilitaryBranch>(veteranToEdit?.branch ?? MilitaryBranch.LandForces);
     const [photoUrl, setPhotoUrl] = useState(veteranToEdit?.photoUrl || '');
 
-    // Subtype within the branch (replaces old "branch => type" implicit mapping)
     const [subtype, setSubtype] = useState<string>(
         veteranToEdit?.$type ?? defaultSubtype(veteranToEdit?.branch ?? MilitaryBranch.LandForces)
     );
 
-    // ── Branch-level fields ───────────────────────────────────────────────────
-    // Air Force branch
     const [totalFlightHours, setTotalFlightHours] = useState<number>(veteranToEdit?.totalFlightHours || 0);
     const [airBase, setAirBase] = useState(veteranToEdit?.airBase || '');
     const [hasCombatMissions, setHasCombatMissions] = useState<boolean>(veteranToEdit?.hasCombatMissions ?? false);
 
-    // Land Forces branch
     const [primaryWeapon, setPrimaryWeapon] = useState(veteranToEdit?.primaryWeapon || '');
     const [combatDeployments, setCombatDeployments] = useState<number>(veteranToEdit?.combatDeployments || 0);
     const [areaOfOperations, setAreaOfOperations] = useState(veteranToEdit?.areaOfOperations || '');
 
-    // Navy branch
     const [vesselName, setVesselName] = useState(veteranToEdit?.vesselName || '');
     const [vesselType, setVesselType] = useState(veteranToEdit?.vesselType || '');
     const [totalSeaDays, setTotalSeaDays] = useState<number>(veteranToEdit?.totalSeaDays || 0);
 
-    // Air Assault branch
     const [totalOperationHours, setTotalOperationHours] = useState<number>(veteranToEdit?.totalOperationHours || 0);
     const [primaryTheatre, setPrimaryTheatre] = useState(veteranToEdit?.primaryTheatre || '');
 
-    // ── Specialized fields (subtype-level) ───────────────────────────────────
     const [specialization, setSpecialization] = useState(veteranToEdit?.specialization || '');
     const [vehicleModel, setVehicleModel] = useState(veteranToEdit?.vehicleModel || '');
     const [experience, setExperience] = useState<number>(veteranToEdit?.experienceValue || 0);
 
-    // Land Forces subtype extras
     const [weaponSystem, setWeaponSystem] = useState(veteranToEdit?.weaponSystem || '');
     const [maxRangeKm, setMaxRangeKm] = useState<number>(veteranToEdit?.maxRangeKm || 0);
     const [crewPosition, setCrewPosition] = useState(veteranToEdit?.crewPosition || '');
 
-    // Air Force subtype extras
     const [systemType, setSystemType] = useState(veteranToEdit?.systemType || '');
     const [confirmedInterceptions, setConfirmedInterceptions] = useState<number>(veteranToEdit?.confirmedInterceptions || 0);
     const [navigationSystem, setNavigationSystem] = useState(veteranToEdit?.navigationSystem || '');
     const [sortieCount, setSortieCount] = useState<number>(veteranToEdit?.sortieCount || 0);
 
-    // Air Assault subtype extras
     const [totalJumps, setTotalJumps] = useState<number>(veteranToEdit?.totalJumps || 0);
     const [parachuteType, setParachuteType] = useState(veteranToEdit?.parachuteType || '');
     const [minesCleared, setMinesCleared] = useState<number>(veteranToEdit?.minesCleared || 0);
     const [sapperQualification, setSapperQualification] = useState(veteranToEdit?.sapperQualification || '');
 
-    // Navy subtype extras
     const [coastalSystem, setCoastalSystem] = useState(veteranToEdit?.coastalSystem || '');
     const [coastalSector, setCoastalSector] = useState(veteranToEdit?.coastalSector || '');
     const [divingDepthRating, setDivingDepthRating] = useState<number>(veteranToEdit?.divingDepthRating || 0);
     const [underwaterMissions, setUnderwaterMissions] = useState<number>(veteranToEdit?.underwaterMissions || 0);
 
-    // Special Ops subtype extras
     const [specialUnit, setSpecialUnit] = useState(veteranToEdit?.specialUnit || '');
     const [missionType, setMissionType] = useState(veteranToEdit?.missionType || '');
     const [isClassified, setIsClassified] = useState<boolean>(veteranToEdit?.isClassified ?? false);
@@ -149,7 +136,6 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
             $type: subtype,
         };
 
-        // Include branch-level fields
         const branchFields: Record<number, Record<string, any>> = {
             [MilitaryBranch.AirForce]: { totalFlightHours, airBase, hasCombatMissions },
             [MilitaryBranch.LandForces]: { primaryWeapon, combatDeployments, areaOfOperations },

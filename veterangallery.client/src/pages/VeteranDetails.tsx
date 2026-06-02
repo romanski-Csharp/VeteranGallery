@@ -4,12 +4,7 @@ import { ArrowLeft, Plane, Users, Anchor, Crosshair, Shield, HelpCircle, MoreVer
 import { getVeteranById, deleteVeteran } from '../api/apiClient';
 import { MilitaryBranch, getRankDisplayName } from '../types/veteran';
 import AddVeteranForm from '../components/AddVeteranForm';
-import type {
-    Veteran, Pilot, Infantryman, NavySailor, DroneOperator,
-    Artillery, TankCrewman, AirDefenseOperator, FlightNavigator,
-    CombatDiver, NavalArtillerist, Paratrooper, AirAssaultSapper,
-    Sniper, SpecialForcesSoldier, SpecialOpsIntelligence
-} from '../types/veteran';
+import type { Veteran } from '../types/veteran';
 
 const VeteranDetails = () => {
     const { id } = useParams<{ id: string }>();
