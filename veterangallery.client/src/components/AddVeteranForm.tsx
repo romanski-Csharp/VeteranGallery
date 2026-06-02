@@ -57,35 +57,55 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
         veteranToEdit?.$type ?? defaultSubtype(veteranToEdit?.branch ?? MilitaryBranch.LandForces)
     );
 
-    // ── Specialized fields ───────────────────────────────────────────────────
+    // ── Branch-level fields ───────────────────────────────────────────────────
+    // Air Force branch
+    const [totalFlightHours, setTotalFlightHours] = useState<number>(veteranToEdit?.totalFlightHours || 0);
+    const [airBase, setAirBase] = useState(veteranToEdit?.airBase || '');
+    const [hasCombatMissions, setHasCombatMissions] = useState<boolean>(veteranToEdit?.hasCombatMissions ?? false);
+
+    // Land Forces branch
+    const [primaryWeapon, setPrimaryWeapon] = useState(veteranToEdit?.primaryWeapon || '');
+    const [combatDeployments, setCombatDeployments] = useState<number>(veteranToEdit?.combatDeployments || 0);
+    const [areaOfOperations, setAreaOfOperations] = useState(veteranToEdit?.areaOfOperations || '');
+
+    // Navy branch
+    const [vesselName, setVesselName] = useState(veteranToEdit?.vesselName || '');
+    const [vesselType, setVesselType] = useState(veteranToEdit?.vesselType || '');
+    const [totalSeaDays, setTotalSeaDays] = useState<number>(veteranToEdit?.totalSeaDays || 0);
+
+    // Air Assault branch
+    const [totalOperationHours, setTotalOperationHours] = useState<number>(veteranToEdit?.totalOperationHours || 0);
+    const [primaryTheatre, setPrimaryTheatre] = useState(veteranToEdit?.primaryTheatre || '');
+
+    // ── Specialized fields (subtype-level) ───────────────────────────────────
     const [specialization, setSpecialization] = useState(veteranToEdit?.specialization || '');
     const [vehicleModel, setVehicleModel] = useState(veteranToEdit?.vehicleModel || '');
     const [experience, setExperience] = useState<number>(veteranToEdit?.experienceValue || 0);
 
-    // Land Forces extras
+    // Land Forces subtype extras
     const [weaponSystem, setWeaponSystem] = useState(veteranToEdit?.weaponSystem || '');
     const [maxRangeKm, setMaxRangeKm] = useState<number>(veteranToEdit?.maxRangeKm || 0);
     const [crewPosition, setCrewPosition] = useState(veteranToEdit?.crewPosition || '');
 
-    // Air Force extras
+    // Air Force subtype extras
     const [systemType, setSystemType] = useState(veteranToEdit?.systemType || '');
     const [confirmedInterceptions, setConfirmedInterceptions] = useState<number>(veteranToEdit?.confirmedInterceptions || 0);
     const [navigationSystem, setNavigationSystem] = useState(veteranToEdit?.navigationSystem || '');
     const [sortieCount, setSortieCount] = useState<number>(veteranToEdit?.sortieCount || 0);
 
-    // Air Assault extras
+    // Air Assault subtype extras
     const [totalJumps, setTotalJumps] = useState<number>(veteranToEdit?.totalJumps || 0);
     const [parachuteType, setParachuteType] = useState(veteranToEdit?.parachuteType || '');
     const [minesCleared, setMinesCleared] = useState<number>(veteranToEdit?.minesCleared || 0);
     const [sapperQualification, setSapperQualification] = useState(veteranToEdit?.sapperQualification || '');
 
-    // Navy extras
+    // Navy subtype extras
     const [coastalSystem, setCoastalSystem] = useState(veteranToEdit?.coastalSystem || '');
     const [coastalSector, setCoastalSector] = useState(veteranToEdit?.coastalSector || '');
     const [divingDepthRating, setDivingDepthRating] = useState<number>(veteranToEdit?.divingDepthRating || 0);
     const [underwaterMissions, setUnderwaterMissions] = useState<number>(veteranToEdit?.underwaterMissions || 0);
 
-    // Special Ops extras
+    // Special Ops subtype extras
     const [specialUnit, setSpecialUnit] = useState(veteranToEdit?.specialUnit || '');
     const [missionType, setMissionType] = useState(veteranToEdit?.missionType || '');
     const [isClassified, setIsClassified] = useState<boolean>(veteranToEdit?.isClassified ?? false);
@@ -123,29 +143,40 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     };
 
     const buildPayload = () => {
-        const base = {
+        const base: Record<string, any> = {
             id: veteranToEdit?.id,
             fullName, rank, unitName, story, branch, photoUrl,
             $type: subtype,
         };
 
+        // Include branch-level fields
+        const branchFields: Record<number, Record<string, any>> = {
+            [MilitaryBranch.AirForce]: { totalFlightHours, airBase, hasCombatMissions },
+            [MilitaryBranch.LandForces]: { primaryWeapon, combatDeployments, areaOfOperations },
+            [MilitaryBranch.Navy]: { vesselName, vesselType, totalSeaDays },
+            [MilitaryBranch.AirAssault]: { totalOperationHours, primaryTheatre },
+            [MilitaryBranch.SpecialOps]: { missionType, isClassified },
+        };
+
+        const withBranch = { ...base, ...branchFields[branch] };
+
         switch (subtype) {
-            case 'infantry':  return { ...base, specialization };
-            case 'artillery': return { ...base, weaponSystem, maxRangeKm };
-            case 'tank_crew': return { ...base, vehicleModel, crewPosition };
-            case 'pilot':       return { ...base, vehicleModel, experienceValue: experience };
-            case 'air_defense': return { ...base, systemType, confirmedInterceptions };
-            case 'navigator':   return { ...base, navigationSystem, sortieCount };
-            case 'drone_op':       return { ...base, vehicleModel, experienceValue: experience };
-            case 'paratrooper':    return { ...base, totalJumps, parachuteType };
-            case 'assault_sapper': return { ...base, minesCleared, sapperQualification };
-            case 'navy':            return { ...base, specialization };
-            case 'combat_diver':    return { ...base, divingDepthRating, underwaterMissions };
-            case 'naval_artillery': return { ...base, coastalSystem, coastalSector };
-            case 'special_ops': return { ...base, specialUnit, missionType, isClassified };
-            case 'sniper':      return { ...base, rifleModel, maxEffectiveRange, missionType, isClassified };
-            case 'spec_intel':  return { ...base, intelSpecialty, fieldOperations, missionType, isClassified };
-            default:            return base;
+            case 'infantry':  return { ...withBranch, specialization };
+            case 'artillery': return { ...withBranch, weaponSystem, maxRangeKm };
+            case 'tank_crew': return { ...withBranch, vehicleModel, crewPosition };
+            case 'pilot':       return { ...withBranch, vehicleModel, experienceValue: experience };
+            case 'air_defense': return { ...withBranch, systemType, confirmedInterceptions };
+            case 'navigator':   return { ...withBranch, navigationSystem, sortieCount };
+            case 'drone_op':       return { ...withBranch, vehicleModel, experienceValue: experience };
+            case 'paratrooper':    return { ...withBranch, totalJumps, parachuteType };
+            case 'assault_sapper': return { ...withBranch, minesCleared, sapperQualification };
+            case 'navy':            return { ...withBranch, specialization };
+            case 'combat_diver':    return { ...withBranch, divingDepthRating, underwaterMissions };
+            case 'naval_artillery': return { ...withBranch, coastalSystem, coastalSector };
+            case 'special_ops': return { ...withBranch, specialUnit };
+            case 'sniper':      return { ...withBranch, rifleModel, maxEffectiveRange };
+            case 'spec_intel':  return { ...withBranch, intelSpecialty, fieldOperations };
+            default:            return withBranch;
         }
     };
 
@@ -199,6 +230,93 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
         { label: 'Navy', value: MilitaryBranch.Navy },
         { label: 'Special Operations Forces', value: MilitaryBranch.SpecialOps },
     ];
+
+    const renderBranchFields = () => {
+        const inputCls = 'w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-[0.95rem] text-slate-900 bg-white outline-none box-border focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 transition-all duration-200';
+        const labelCls = 'block text-[0.85rem] font-semibold text-slate-600 mb-1.5';
+
+        switch (branch) {
+            case MilitaryBranch.AirForce:
+                return (
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-4">
+                        <div>
+                            <label className={labelCls}>Air Base</label>
+                            <input required className={inputCls} value={airBase} onChange={e => setAirBase(e.target.value)} placeholder="e.g. Vasylkiv, Starokostiantyniv" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Total Flight Hours</label>
+                            <input required type="number" min="0" className={inputCls} value={totalFlightHours} onChange={e => setTotalFlightHours(Number(e.target.value))} />
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                            <input type="checkbox" id="hasCombatMissions" checked={hasCombatMissions} onChange={e => setHasCombatMissions(e.target.checked)} className="w-4 h-4 cursor-pointer" />
+                            <label htmlFor="hasCombatMissions" className={labelCls + ' mb-0 cursor-pointer'}>Has Combat Missions</label>
+                        </div>
+                    </div>
+                );
+            case MilitaryBranch.LandForces:
+                return (
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-4">
+                        <div>
+                            <label className={labelCls}>Primary Weapon</label>
+                            <input required className={inputCls} value={primaryWeapon} onChange={e => setPrimaryWeapon(e.target.value)} placeholder="e.g. AK-74, M4A1" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Area of Operations</label>
+                            <input required className={inputCls} value={areaOfOperations} onChange={e => setAreaOfOperations(e.target.value)} placeholder="e.g. Bakhmut, Zaporizhzhia" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Combat Deployments</label>
+                            <input required type="number" min="0" className={inputCls} value={combatDeployments} onChange={e => setCombatDeployments(Number(e.target.value))} />
+                        </div>
+                    </div>
+                );
+            case MilitaryBranch.Navy:
+                return (
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-4">
+                        <div>
+                            <label className={labelCls}>Vessel Name</label>
+                            <input required className={inputCls} value={vesselName} onChange={e => setVesselName(e.target.value)} placeholder="e.g. Hetman Ivan Mazepa" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Vessel Type</label>
+                            <input required className={inputCls} value={vesselType} onChange={e => setVesselType(e.target.value)} placeholder="e.g. Corvette, Patrol Boat" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Total Sea Days</label>
+                            <input required type="number" min="0" className={inputCls} value={totalSeaDays} onChange={e => setTotalSeaDays(Number(e.target.value))} />
+                        </div>
+                    </div>
+                );
+            case MilitaryBranch.AirAssault:
+                return (
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-4">
+                        <div>
+                            <label className={labelCls}>Primary Theatre</label>
+                            <input required className={inputCls} value={primaryTheatre} onChange={e => setPrimaryTheatre(e.target.value)} placeholder="e.g. East, South" />
+                        </div>
+                        <div>
+                            <label className={labelCls}>Total Operation Hours</label>
+                            <input required type="number" min="0" className={inputCls} value={totalOperationHours} onChange={e => setTotalOperationHours(Number(e.target.value))} />
+                        </div>
+                    </div>
+                );
+            case MilitaryBranch.SpecialOps:
+                return (
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 mb-4">
+                        <div>
+                            <label className={labelCls}>Mission Type</label>
+                            <input required={!isClassified} className={inputCls} value={missionType} onChange={e => setMissionType(e.target.value)} disabled={isClassified} placeholder="e.g. Reconnaissance, VBSS" />
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                            <input type="checkbox" id="isClassifiedBranch" checked={isClassified} onChange={e => setIsClassified(e.target.checked)} className="w-4 h-4 cursor-pointer" />
+                            <label htmlFor="isClassifiedBranch" className={labelCls + ' mb-0 cursor-pointer'}>Service details classified</label>
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
 
     const renderSpecializedFields = () => {
         const inputCls = 'w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-[0.95rem] text-slate-900 bg-white outline-none box-border focus:border-blue-600 focus:ring-3 focus:ring-blue-600/15 transition-all duration-200';
@@ -351,19 +469,9 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                 );
             case 'special_ops':
                 return (
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-                        <div>
-                            <label className={labelCls}>Special Unit</label>
-                            <input required className={inputCls} value={specialUnit} onChange={e => setSpecialUnit(e.target.value)} placeholder="e.g. 3rd Special Purpose Rgt" />
-                        </div>
-                        <div>
-                            <label className={labelCls}>Mission Type</label>
-                            <input required={!isClassified} className={inputCls} value={missionType} onChange={e => setMissionType(e.target.value)} disabled={isClassified} placeholder="e.g. Reconnaissance, VBSS" />
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                            <input type="checkbox" id="isClassified" checked={isClassified} onChange={e => setIsClassified(e.target.checked)} className="w-4 h-4 cursor-pointer" />
-                            <label htmlFor="isClassified" className={labelCls + ' mb-0 cursor-pointer'}>Service details classified</label>
-                        </div>
+                    <div>
+                        <label className={labelCls}>Special Unit</label>
+                        <input required className={inputCls} value={specialUnit} onChange={e => setSpecialUnit(e.target.value)} placeholder="e.g. 3rd Special Purpose Rgt" />
                     </div>
                 );
             case 'sniper':
@@ -377,10 +485,6 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                             <label className={labelCls}>Max Effective Range (m)</label>
                             <input required type="number" min="0" className={inputCls} value={maxEffectiveRange} onChange={e => setMaxEffectiveRange(Number(e.target.value))} />
                         </div>
-                        <div className="flex items-center gap-2 mt-1">
-                            <input type="checkbox" id="isClassifiedSniper" checked={isClassified} onChange={e => setIsClassified(e.target.checked)} className="w-4 h-4 cursor-pointer" />
-                            <label htmlFor="isClassifiedSniper" className={labelCls + ' mb-0 cursor-pointer'}>Service details classified</label>
-                        </div>
                     </div>
                 );
             case 'spec_intel':
@@ -393,10 +497,6 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                         <div>
                             <label className={labelCls}>Field Operations</label>
                             <input required type="number" min="0" className={inputCls} value={fieldOperations} onChange={e => setFieldOperations(Number(e.target.value))} />
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                            <input type="checkbox" id="isClassifiedIntel" checked={isClassified} onChange={e => setIsClassified(e.target.checked)} className="w-4 h-4 cursor-pointer" />
-                            <label htmlFor="isClassifiedIntel" className={labelCls + ' mb-0 cursor-pointer'}>Service details classified</label>
                         </div>
                     </div>
                 );
@@ -468,6 +568,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
                             />
                         </div>
                     </div>
+                    {renderBranchFields()}
                     {renderSpecializedFields()}
                 </div>
 
