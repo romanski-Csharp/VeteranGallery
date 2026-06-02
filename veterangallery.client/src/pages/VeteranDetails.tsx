@@ -128,7 +128,7 @@ const VeteranDetails = () => {
                     <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
                         <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Aviation Record</h4>
                         <p className="my-1"><strong>Aircraft:</strong> {v.vehicleModel}</p>
-                        <p className="my-1"><strong>Flight Hours:</strong> {v.experienceValue} hrs</p>
+                        <p className="my-1"><strong>Flight Hours:</strong> {v.totalFlightHours ?? 0} hrs</p>
                     </div>
                 );
             }
@@ -158,7 +158,7 @@ const VeteranDetails = () => {
                     <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
                         <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Drone Operations Record</h4>
                         <p className="my-1"><strong>Drone Model:</strong> {v.vehicleModel}</p>
-                        <p className="my-1"><strong>Sorties:</strong> {v.experienceValue}</p>
+                        <p className="my-1"><strong>Sorties:</strong> {v.totalOperationHours ?? 0}</p>
                     </div>
                 );
             }

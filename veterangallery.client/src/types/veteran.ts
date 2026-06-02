@@ -99,7 +99,6 @@ export interface TankCrewman extends LandForcesVeteran {
 export interface Pilot extends AirForceVeteran {
     $type: 'pilot';
     vehicleModel: string;
-    experienceValue: number;
 }
 
 export interface AirDefenseOperator extends AirForceVeteran {
@@ -117,7 +116,6 @@ export interface FlightNavigator extends AirForceVeteran {
 export interface DroneOperator extends AirAssaultVeteran {
     $type: 'drone_op';
     vehicleModel: string;
-    experienceValue: number;
 }
 
 export interface Paratrooper extends AirAssaultVeteran {

@@ -41,7 +41,7 @@ const VeteranCard = ({ veteran }: Props) => {
             }
             case 'pilot': {
                 const v = veteran as Pilot;
-                return <div className="text-[0.85rem] text-blue-300 mt-1">{v.vehicleModel} • {v.experienceValue} hrs</div>;
+                return <div className="text-[0.85rem] text-blue-300 mt-1">{v.vehicleModel} • {v.totalFlightHours} hrs</div>;
             }
             case 'air_defense': {
                 const v = veteran as AirDefenseOperator;
@@ -53,7 +53,7 @@ const VeteranCard = ({ veteran }: Props) => {
             }
             case 'drone_op': {
                 const v = veteran as DroneOperator;
-                return <div className="text-[0.85rem] text-purple-300 mt-1">{v.vehicleModel} • {v.experienceValue} sorties</div>;
+                return <div className="text-[0.85rem] text-purple-300 mt-1">{v.vehicleModel} • {v.totalOperationHours} sorties</div>;
             }
             case 'paratrooper': {
                 const v = veteran as Paratrooper;

@@ -9,7 +9,6 @@ interface Props {
     onCancel?: () => void;
 }
 
-// ── Subtype options per branch ─────────────────────────────────────────────────
 const subtypesByBranch: Record<number, { label: string; value: string }[]> = {
     [MilitaryBranch.LandForces]: [
         { label: 'Infantryman', value: 'infantry' },
@@ -52,40 +51,39 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
     const [branch, setBranch] = useState<MilitaryBranch>(veteranToEdit?.branch ?? MilitaryBranch.LandForces);
     const [photoUrl, setPhotoUrl] = useState(veteranToEdit?.photoUrl || '');
 
-    // Subtype within the branch (replaces old "branch => type" implicit mapping)
     const [subtype, setSubtype] = useState<string>(
         veteranToEdit?.$type ?? defaultSubtype(veteranToEdit?.branch ?? MilitaryBranch.LandForces)
     );
 
-    // ── Specialized fields ───────────────────────────────────────────────────
+    const getInitialExperience = () => {
+        if (!veteranToEdit) return 0;
+        if (veteranToEdit.$type === 'pilot') {
+            return (veteranToEdit as any).totalFlightHours || 0;
+        }
+        if (veteranToEdit.$type === 'drone_op') {
+            return (veteranToEdit as any).totalOperationHours || 0;
+        }
+        return (veteranToEdit as any).experienceValue || 0;
+    };
+
     const [specialization, setSpecialization] = useState(veteranToEdit?.specialization || '');
     const [vehicleModel, setVehicleModel] = useState(veteranToEdit?.vehicleModel || '');
-    const [experience, setExperience] = useState<number>(veteranToEdit?.experienceValue || 0);
-
-    // Land Forces extras
+    const [experience, setExperience] = useState<number>(getInitialExperience());
     const [weaponSystem, setWeaponSystem] = useState(veteranToEdit?.weaponSystem || '');
     const [maxRangeKm, setMaxRangeKm] = useState<number>(veteranToEdit?.maxRangeKm || 0);
     const [crewPosition, setCrewPosition] = useState(veteranToEdit?.crewPosition || '');
-
-    // Air Force extras
     const [systemType, setSystemType] = useState(veteranToEdit?.systemType || '');
     const [confirmedInterceptions, setConfirmedInterceptions] = useState<number>(veteranToEdit?.confirmedInterceptions || 0);
     const [navigationSystem, setNavigationSystem] = useState(veteranToEdit?.navigationSystem || '');
     const [sortieCount, setSortieCount] = useState<number>(veteranToEdit?.sortieCount || 0);
-
-    // Air Assault extras
     const [totalJumps, setTotalJumps] = useState<number>(veteranToEdit?.totalJumps || 0);
     const [parachuteType, setParachuteType] = useState(veteranToEdit?.parachuteType || '');
     const [minesCleared, setMinesCleared] = useState<number>(veteranToEdit?.minesCleared || 0);
     const [sapperQualification, setSapperQualification] = useState(veteranToEdit?.sapperQualification || '');
-
-    // Navy extras
     const [coastalSystem, setCoastalSystem] = useState(veteranToEdit?.coastalSystem || '');
     const [coastalSector, setCoastalSector] = useState(veteranToEdit?.coastalSector || '');
     const [divingDepthRating, setDivingDepthRating] = useState<number>(veteranToEdit?.divingDepthRating || 0);
     const [underwaterMissions, setUnderwaterMissions] = useState<number>(veteranToEdit?.underwaterMissions || 0);
-
-    // Special Ops extras
     const [specialUnit, setSpecialUnit] = useState(veteranToEdit?.specialUnit || '');
     const [missionType, setMissionType] = useState(veteranToEdit?.missionType || '');
     const [isClassified, setIsClassified] = useState<boolean>(veteranToEdit?.isClassified ?? false);
@@ -124,6 +122,7 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
 
     const buildPayload = () => {
         const base = {
+            ...veteranToEdit,
             id: veteranToEdit?.id,
             fullName, rank, unitName, story, branch, photoUrl,
             $type: subtype,
@@ -133,10 +132,10 @@ const AddVeteranForm = ({ onSuccess, veteranToEdit, onCancel }: Props) => {
             case 'infantry':  return { ...base, specialization };
             case 'artillery': return { ...base, weaponSystem, maxRangeKm };
             case 'tank_crew': return { ...base, vehicleModel, crewPosition };
-            case 'pilot':       return { ...base, vehicleModel, experienceValue: experience };
+            case 'pilot':       return { ...base, vehicleModel, totalFlightHours: experience };
             case 'air_defense': return { ...base, systemType, confirmedInterceptions };
             case 'navigator':   return { ...base, navigationSystem, sortieCount };
-            case 'drone_op':       return { ...base, vehicleModel, experienceValue: experience };
+            case 'drone_op':       return { ...base, vehicleModel, totalOperationHours: experience };
             case 'paratrooper':    return { ...base, totalJumps, parachuteType };
             case 'assault_sapper': return { ...base, minesCleared, sapperQualification };
             case 'navy':            return { ...base, specialization };
