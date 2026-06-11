@@ -11,14 +11,8 @@ public abstract class NavyVeteran : Veteran
 
     public override string BranchDisplayName => "Navy";
 
-    public string VesselName { get; set; } = string.Empty;
-
-    public string VesselType { get; set; } = string.Empty;
-
-    public int TotalSeaDays { get; set; }
-
     public string GetNavySummary()
-        => $"Vessel: {VesselName} ({VesselType}). Sea Days: {TotalSeaDays}.";
+        => string.Empty;
 
-    public override string GetSearchableText() => $"{VesselName} {VesselType}".Trim();
+    public override string GetSearchableText() => string.Empty;
 }

@@ -49,28 +49,19 @@ export interface Veteran {
 export interface AirForceVeteran extends Veteran {
     branch: typeof MilitaryBranch.AirForce;
     totalFlightHours: number;
-    airBase: string;
-    hasCombatMissions: boolean;
 }
 
 export interface LandForcesVeteran extends Veteran {
     branch: typeof MilitaryBranch.LandForces;
-    primaryWeapon: string;
-    combatDeployments: number;
-    areaOfOperations: string;
 }
 
 export interface NavyVeteranBase extends Veteran {
     branch: typeof MilitaryBranch.Navy;
-    vesselName: string;
-    vesselType: string;
-    totalSeaDays: number;
 }
 
 export interface AirAssaultVeteran extends Veteran {
     branch: typeof MilitaryBranch.AirAssault;
     totalOperationHours: number;
-    primaryTheatre: string;
 }
 
 export interface SpecialOpsVeteranBase extends Veteran {

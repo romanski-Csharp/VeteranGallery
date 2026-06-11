@@ -89,89 +89,30 @@ const VeteranDetails = () => {
     const renderSpecializedDetails = () => {
         const v = veteran as any;
 
-        const renderBranchInfo = () => {
-            switch (veteran.branch) {
-                case MilitaryBranch.AirForce:
-                    return (
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                            <h5 className="m-0 mb-2 text-slate-500 text-[0.8rem] uppercase tracking-wide">Air Force Service</h5>
-                            <div className="grid grid-cols-3 gap-3">
-                                {v.airBase && <p className="my-0.5 text-[0.9rem]"><strong>Air Base:</strong> {v.airBase}</p>}
-                                <p className="my-0.5 text-[0.9rem]"><strong>Flight Hours:</strong> {v.totalFlightHours ?? 0}</p>
-                                <p className="my-0.5 text-[0.9rem]"><strong>Combat Missions:</strong> {v.hasCombatMissions ? 'Yes' : 'No'}</p>
-                            </div>
-                        </div>
-                    );
-                case MilitaryBranch.LandForces:
-                    return (
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                            <h5 className="m-0 mb-2 text-slate-500 text-[0.8rem] uppercase tracking-wide">Land Forces Service</h5>
-                            <div className="grid grid-cols-3 gap-3">
-                                {v.primaryWeapon && <p className="my-0.5 text-[0.9rem]"><strong>Weapon:</strong> {v.primaryWeapon}</p>}
-                                {v.areaOfOperations && <p className="my-0.5 text-[0.9rem]"><strong>Area:</strong> {v.areaOfOperations}</p>}
-                                <p className="my-0.5 text-[0.9rem]"><strong>Deployments:</strong> {v.combatDeployments ?? 0}</p>
-                            </div>
-                        </div>
-                    );
-                case MilitaryBranch.Navy:
-                    return (
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                            <h5 className="m-0 mb-2 text-slate-500 text-[0.8rem] uppercase tracking-wide">Naval Service</h5>
-                            <div className="grid grid-cols-3 gap-3">
-                                {v.vesselName && <p className="my-0.5 text-[0.9rem]"><strong>Vessel:</strong> {v.vesselName}</p>}
-                                {v.vesselType && <p className="my-0.5 text-[0.9rem]"><strong>Type:</strong> {v.vesselType}</p>}
-                                <p className="my-0.5 text-[0.9rem]"><strong>Sea Days:</strong> {v.totalSeaDays ?? 0}</p>
-                            </div>
-                        </div>
-                    );
-                case MilitaryBranch.AirAssault:
-                    return (
-                        <div className="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200">
-                            <h5 className="m-0 mb-2 text-slate-500 text-[0.8rem] uppercase tracking-wide">Air Assault Service</h5>
-                            <div className="grid grid-cols-2 gap-3">
-                                {v.primaryTheatre && <p className="my-0.5 text-[0.9rem]"><strong>Theatre:</strong> {v.primaryTheatre}</p>}
-                                <p className="my-0.5 text-[0.9rem]"><strong>Operation Hours:</strong> {v.totalOperationHours ?? 0}</p>
-                            </div>
-                        </div>
-                    );
-                default:
-                    return null;
-            }
-        };
-
         switch (veteran.$type) {
             case 'infantry': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-green-50 p-5 rounded-xl border-l-4 border-green-500">
-                            <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Infantry Record</h4>
-                            <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
-                        </div>
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Infantry Record</h4>
+                        <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
                     </div>
                 );
             }
             case 'artillery': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-green-50 p-5 rounded-xl border-l-4 border-green-500">
-                            <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Artillery Record</h4>
-                            <p className="my-1"><strong>Weapon System:</strong> {v.weaponSystem}</p>
-                            <p className="my-1"><strong>Max Range:</strong> {v.maxRangeKm} km</p>
-                        </div>
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Artillery Record</h4>
+                        <p className="my-1"><strong>Weapon System:</strong> {v.weaponSystem}</p>
+                        <p className="my-1"><strong>Max Range:</strong> {v.maxRangeKm} km</p>
                     </div>
                 );
             }
             case 'tank_crew': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-green-50 p-5 rounded-xl border-l-4 border-green-500">
-                            <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Armoured Forces Record</h4>
-                            <p className="my-1"><strong>Tank:</strong> {v.vehicleModel}</p>
-                            <p className="my-1"><strong>Crew Position:</strong> {v.crewPosition}</p>
-                        </div>
+                    <div className="bg-green-50 p-5 rounded-xl mt-6 border-l-4 border-green-500">
+                        <h4 className="m-0 mb-2 text-green-800 text-[0.9rem] uppercase">Armoured Forces Record</h4>
+                        <p className="my-1"><strong>Tank:</strong> {v.vehicleModel}</p>
+                        <p className="my-1"><strong>Crew Position:</strong> {v.crewPosition}</p>
                     </div>
                 );
             }
@@ -186,25 +127,19 @@ const VeteranDetails = () => {
             }
             case 'air_defense': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-blue-50 p-5 rounded-xl border-l-4 border-blue-500">
-                            <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Air Defense Record</h4>
-                            <p className="my-1"><strong>System:</strong> {v.systemType}</p>
-                            <p className="my-1"><strong>Confirmed Interceptions:</strong> {v.confirmedInterceptions}</p>
-                        </div>
+                    <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                        <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Air Defense Record</h4>
+                        <p className="my-1"><strong>System:</strong> {v.systemType}</p>
+                        <p className="my-1"><strong>Confirmed Interceptions:</strong> {v.confirmedInterceptions}</p>
                     </div>
                 );
             }
             case 'navigator': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-blue-50 p-5 rounded-xl border-l-4 border-blue-500">
-                            <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Navigation Record</h4>
-                            <p className="my-1"><strong>Navigation System:</strong> {v.navigationSystem}</p>
-                            <p className="my-1"><strong>Combat Sorties:</strong> {v.sortieCount}</p>
-                        </div>
+                    <div className="bg-blue-50 p-5 rounded-xl mt-6 border-l-4 border-blue-500">
+                        <h4 className="m-0 mb-2 text-blue-800 text-[0.9rem] uppercase">Navigation Record</h4>
+                        <p className="my-1"><strong>Navigation System:</strong> {v.navigationSystem}</p>
+                        <p className="my-1"><strong>Combat Sorties:</strong> {v.sortieCount}</p>
                     </div>
                 );
             }
@@ -219,60 +154,45 @@ const VeteranDetails = () => {
             }
             case 'paratrooper': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-purple-50 p-5 rounded-xl border-l-4 border-purple-500">
-                            <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Airborne Record</h4>
-                            <p className="my-1"><strong>Parachute System:</strong> {v.parachuteType}</p>
-                            <p className="my-1"><strong>Total Jumps:</strong> {v.totalJumps}</p>
-                        </div>
+                    <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                        <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Airborne Record</h4>
+                        <p className="my-1"><strong>Parachute System:</strong> {v.parachuteType}</p>
+                        <p className="my-1"><strong>Total Jumps:</strong> {v.totalJumps}</p>
                     </div>
                 );
             }
             case 'assault_sapper': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-purple-50 p-5 rounded-xl border-l-4 border-purple-500">
-                            <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Sapper Record</h4>
-                            <p className="my-1"><strong>Qualification:</strong> {v.sapperQualification}</p>
-                            <p className="my-1"><strong>Objects Demined:</strong> {v.minesCleared}</p>
-                        </div>
+                    <div className="bg-purple-50 p-5 rounded-xl mt-6 border-l-4 border-purple-500">
+                        <h4 className="m-0 mb-2 text-purple-800 text-[0.9rem] uppercase">Sapper Record</h4>
+                        <p className="my-1"><strong>Qualification:</strong> {v.sapperQualification}</p>
+                        <p className="my-1"><strong>Objects Demined:</strong> {v.minesCleared}</p>
                     </div>
                 );
             }
             case 'navy': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-sky-50 p-5 rounded-xl border-l-4 border-sky-500">
-                            <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Record</h4>
-                            <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
-                        </div>
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Record</h4>
+                        <p className="my-1"><strong>Specialization:</strong> {v.specialization}</p>
                     </div>
                 );
             }
             case 'combat_diver': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-sky-50 p-5 rounded-xl border-l-4 border-sky-500">
-                            <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Combat Diving Record</h4>
-                            <p className="my-1"><strong>Max Depth:</strong> {v.divingDepthRating} m</p>
-                            <p className="my-1"><strong>Underwater Missions:</strong> {v.underwaterMissions}</p>
-                        </div>
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Combat Diving Record</h4>
+                        <p className="my-1"><strong>Max Depth:</strong> {v.divingDepthRating} m</p>
+                        <p className="my-1"><strong>Underwater Missions:</strong> {v.underwaterMissions}</p>
                     </div>
                 );
             }
             case 'naval_artillery': {
                 return (
-                    <div className="mt-6">
-                        {renderBranchInfo()}
-                        <div className="bg-sky-50 p-5 rounded-xl border-l-4 border-sky-500">
-                            <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Artillery Record</h4>
-                            <p className="my-1"><strong>Coastal System:</strong> {v.coastalSystem}</p>
-                            <p className="my-1"><strong>Sector:</strong> {v.coastalSector}</p>
-                        </div>
+                    <div className="bg-sky-50 p-5 rounded-xl mt-6 border-l-4 border-sky-500">
+                        <h4 className="m-0 mb-2 text-sky-800 text-[0.9rem] uppercase">Naval Artillery Record</h4>
+                        <p className="my-1"><strong>Coastal System:</strong> {v.coastalSystem}</p>
+                        <p className="my-1"><strong>Sector:</strong> {v.coastalSector}</p>
                     </div>
                 );
             }
