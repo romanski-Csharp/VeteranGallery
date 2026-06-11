@@ -10,39 +10,39 @@ const AboutModal = ({ isOpen, onClose }: AboutModalProps) => {
 
     return (
         <div
-            className="fixed inset-0 z-[200] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-8"
+            className="fixed inset-0 z-[200] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 md:p-8"
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-3xl w-full max-w-[650px] flex overflow-hidden shadow-2xl relative"
+                className="bg-white w-full max-w-full md:max-w-[750px] h-full md:h-[90vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative md:rounded-3xl"
                 style={{ animation: 'aboutModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
                 onClick={e => e.stopPropagation()}
             >
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 border-none w-8 h-8 rounded-full flex items-center justify-center cursor-pointer text-slate-500 hover:text-slate-700 transition-all duration-200"
+                    className="absolute top-4 right-4 z-10 bg-slate-100 hover:bg-slate-200 border-none w-8 h-8 rounded-full flex items-center justify-center cursor-pointer text-slate-500 hover:text-slate-700 transition-all duration-200"
                 >
                     <X size={16} />
                 </button>
 
-                <div className="w-[38%] shrink-0 bg-slate-900 relative">
+                <div className="h-[63vw] md:h-auto w-full md:w-[45%] shrink-0 bg-slate-900 md:rounded-l-3xl overflow-hidden">
                     <img
                         src="/developer.jpg"
                         alt="Developer"
-                        className="w-full h-full object-cover aspect-[3/4]"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                             e.currentTarget.src = "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=500&fit=crop";
                         }}
                     />
                 </div>
 
-                <div className="flex-1 p-10 px-8">
+                <div className="custom-scroll flex-1 p-6 md:p-10 md:px-8 overflow-y-auto">
                     <div className="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-full text-slate-900 font-semibold text-[0.8rem] mb-4">
                         <Award size={16} color="#f59e0b" />
                         OOP Coursework 2026
                     </div>
 
-                    <h3 className="m-0 mb-1 text-2xl font-extrabold text-slate-900 tracking-[-0.5px]">
+                    <h3 className="m-0 mb-1 text-[1.6rem] md:text-2xl font-extrabold text-slate-900 tracking-[-0.5px]">
                         Chub Roman
                     </h3>
                     <p className="m-0 mb-6 text-blue-600 text-[0.9rem] font-semibold">

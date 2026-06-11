@@ -322,11 +322,11 @@ const VeteranDetails = () => {
 
     return (
         <div
-            className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-8"
+            className="fixed inset-0 z-[100] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2 md:p-8"
             onClick={handleClose}
         >
             <div
-                className="bg-white rounded-3xl w-full max-w-[850px] max-h-[90vh] flex overflow-hidden shadow-2xl relative"
+                className="bg-white w-full max-w-full md:max-w-[1100px] h-full md:h-[90vh] flex flex-col md:flex-row overflow-hidden shadow-2xl relative md:rounded-3xl"
                 style={{ animation: 'modalFadeIn 0.3s ease-out forwards' }}
                 onClick={e => e.stopPropagation()}
             >
@@ -369,7 +369,7 @@ const VeteranDetails = () => {
                     )}
                 </div>
 
-                <div className="w-[42%] shrink-0 bg-slate-800 rounded-l-3xl overflow-hidden">
+                <div className="h-[63vw] md:h-auto w-full md:w-[50%] shrink-0 bg-slate-800 md:rounded-l-3xl overflow-hidden">
                     <img
                         src={veteran.photoUrl || '/default-hero.png'}
                         alt={veteran.fullName}
@@ -378,7 +378,7 @@ const VeteranDetails = () => {
                     />
                 </div>
 
-                <div className="custom-scroll flex-1 p-12 pr-10 overflow-y-auto">
+                <div className="custom-scroll flex-1 p-6 md:p-12 md:pr-10 overflow-y-auto">
                     {isEditing ? (
                         <AddVeteranForm
                             veteranToEdit={veteran}
@@ -394,7 +394,7 @@ const VeteranDetails = () => {
                                 </div>
                             </div>
 
-                            <h2 className="m-0 mb-2 text-[2.5rem] text-slate-900 font-extrabold leading-none">{veteran.fullName}</h2>
+                            <h2 className="m-0 mb-2 text-[1.8rem] md:text-[2.5rem] text-slate-900 font-extrabold leading-none">{veteran.fullName}</h2>
                             <p className="m-0 mb-8 text-slate-500 text-[1.1rem] font-medium">
                                 {getRankDisplayName(veteran.rank, veteran.branch)} • {veteran.unitName}
                             </p>

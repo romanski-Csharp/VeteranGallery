@@ -60,10 +60,10 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
 
     return (
         <>
-            <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-8 py-4 flex justify-between items-center gap-8 flex-wrap">
-                <div className="flex items-center gap-4">
+            <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 py-3 md:py-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-8">
+                <div className="flex items-center justify-between md:justify-start gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-[1.2rem] tracking-tight">
+                        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-[1.2rem] tracking-tight shrink-0">
                             VG
                         </div>
                         <h1 className="m-0 text-xl font-extrabold text-slate-900 tracking-[-0.5px] whitespace-nowrap">
@@ -71,12 +71,12 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
+                    <div className="flex items-center gap-2 md:border-l md:border-slate-200 md:pl-4">
                         <button
                             onClick={() => setIsAboutOpen(true)}
                             className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 border-none px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer transition-all duration-200"
                         >
-                            <Info size={14} /> About App
+                            <Info size={14} /> <span className="hidden sm:inline">About App</span>
                         </button>
 
                         {isAdmin ? (
@@ -87,9 +87,9 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                                 </button>
                             </div>
                         ) : (
-                            <button 
-                                onClick={() => setIsLoginOpen(true)} 
-                                className="bg-transparent border-none text-slate-400 hover:text-slate-800 cursor-pointer p-1.5 transition-colors duration-200 flex items-center" 
+                            <button
+                                onClick={() => setIsLoginOpen(true)}
+                                className="bg-transparent border-none text-slate-400 hover:text-slate-800 cursor-pointer p-1.5 transition-colors duration-200 flex items-center"
                                 title="Commander Login"
                             >
                                 <ShieldAlert size={16} />
@@ -98,20 +98,20 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                     </div>
                 </div>
 
-                <div className="flex-1 max-w-[600px] flex gap-4 relative z-[60]">
+                <div className="flex gap-2 relative z-[60] md:flex-1 md:max-w-[600px]">
                     <div className="flex-1 relative">
                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
                             <Search size={16} />
                         </div>
                         <input
                             type="text"
-                            placeholder="Search by name, rank, unit, or spec..."
+                            placeholder="Search by name, rank, unit..."
                             onChange={(e) => onSearchChange(e.target.value)}
                             className="w-full py-2.5 pl-[42px] pr-4 rounded-full border border-slate-200 bg-slate-50 text-[0.9rem] text-slate-900 outline-none box-border transition-all duration-200 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-400/10"
                         />
                     </div>
 
-                    <div className="min-w-[190px]">
+                    <div className="min-w-[140px] md:min-w-[190px]">
                         <CustomSelect
                             value={currentSort}
                             onChange={handleSortChange}
@@ -121,8 +121,8 @@ const Header = ({ onFilterChange, onSearchChange, onSortChange }: Props) => {
                     </div>
                 </div>
 
-                <nav className="flex gap-1 bg-slate-100 p-1 rounded-full border border-slate-200 overflow-x-auto">
-                    <FilterButton label="All Heroes" value={null} />
+                <nav className="flex gap-1 bg-slate-100 p-1 rounded-full border border-slate-200 overflow-x-auto scrollbar-hide -mx-1 px-1">
+                    <FilterButton label="All" value={null} />
                     <FilterButton label="Land Forces" value={MilitaryBranch.LandForces} />
                     <FilterButton label="Air Force" value={MilitaryBranch.AirForce} />
                     <FilterButton label="Air Assault" value={MilitaryBranch.AirAssault} />

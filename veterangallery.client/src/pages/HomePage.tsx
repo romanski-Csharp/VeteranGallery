@@ -170,10 +170,10 @@ const HomePage = () => {
 
 
     return (
-        <div className="min-h-screen flex flex-col bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pb-10">
+        <div className="min-h-screen flex flex-col bg-slate-50 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pb-14">
             <Header onFilterChange={setActiveBranch} onSearchChange={setSearchQuery} onSortChange={setSortBy} />
 
-            <main className="flex-1 max-w-[1200px] w-full mx-auto p-8">
+            <main className="flex-1 max-w-[1200px] w-full mx-auto p-4 md:p-8">
 
                 {isAdmin && (
                     <div className="flex gap-8 border-b-2 border-slate-200 mb-8">
@@ -205,7 +205,7 @@ const HomePage = () => {
                             <h3>No records found</h3>
                         </div>
                     ) : (
-                        <div key={gridKey} className={`grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-8 transition-opacity duration-200 ease-in-out ${loading ? 'opacity-40' : 'opacity-100'}`}>
+                        <div key={gridKey} className={`grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3 md:gap-8 transition-opacity duration-200 ease-in-out ${loading ? 'opacity-40' : 'opacity-100'}`}>
                             {veterans.map((v, index) => (
                                 <div key={v.id} style={{ animation: `fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards`, animationDelay: `${index * 0.05}s`, opacity: 0 }}>
                                     <VeteranCard veteran={v} />
@@ -269,18 +269,18 @@ const HomePage = () => {
                 </div>
             </main>
 
-            <footer className="fixed bottom-0 inset-x-0 bg-slate-900 text-slate-300 px-6 py-2 flex justify-between items-center text-[0.8rem] z-[100] shadow-[0_-4px_6px_rgba(0,0,0,0.1)]">
+            <footer className="fixed bottom-0 inset-x-0 bg-slate-900 text-slate-300 px-3 md:px-6 py-1.5 md:py-2 flex justify-between items-center text-[0.8rem] z-[100] shadow-[0_-4px_6px_rgba(0,0,0,0.1)]">
                 <div className="flex items-center gap-2">
                     <Activity size={16} style={{ color: '#22c55e' }} />
                     <span className="font-medium text-white">Status:</span> {statusMessage}
                 </div>
-                <div className="flex gap-6 font-medium">
-                    <span>Total Profiles: <strong className="text-white">{veterans.length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Land Forces: <strong className="text-white">{veterans.filter(v => v.branch === 1).length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Aviation: <strong className="text-white">{veterans.filter(v => v.branch === 2).length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Air Assault: <strong className="text-white">{veterans.filter(v => v.branch === 3).length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.branch === 4).length}</strong></span>
-                    <span className="border-l border-slate-800 pl-6">SpecOps: <strong className="text-white">{veterans.filter(v => v.branch === 5).length}</strong></span>
+                <div className="flex gap-3 md:gap-6 font-medium">
+                    <span>Total: <strong className="text-white">{veterans.length}</strong></span>
+                    <span className="hidden md:inline border-l border-slate-800 pl-6">Land Forces: <strong className="text-white">{veterans.filter(v => v.branch === 1).length}</strong></span>
+                    <span className="hidden md:inline border-l border-slate-800 pl-6">Air Force: <strong className="text-white">{veterans.filter(v => v.branch === 2).length}</strong></span>
+                    <span className="hidden md:inline border-l border-slate-800 pl-6">Air Assault: <strong className="text-white">{veterans.filter(v => v.branch === 3).length}</strong></span>
+                    <span className="hidden md:inline border-l border-slate-800 pl-6">Navy: <strong className="text-white">{veterans.filter(v => v.branch === 4).length}</strong></span>
+                    <span className="hidden md:inline border-l border-slate-800 pl-6">Special Ops: <strong className="text-white">{veterans.filter(v => v.branch === 5).length}</strong></span>
                 </div>
             </footer>
 

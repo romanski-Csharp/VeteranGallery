@@ -6,27 +6,18 @@
 
 body {
     margin: 0;
+    padding: 0;
     background-color: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.veteran-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.veteran-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    overflow: hidden;
-}
-
-.card-image-container img {
-    width: 100%;
-    height: 200px;
-    object-cover: cover;
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
 }
 
 @keyframes fadeInUp {
@@ -39,10 +30,4 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
